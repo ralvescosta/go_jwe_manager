@@ -47,7 +47,7 @@ func makeSut() sutReturn {
 		return httpServer.HttpResponse{}
 	}
 
-	loggerMock := logger.NewLoggerSpy()
+	loggerMock := logger.NewLogger()
 
 	req := &http.Request{
 		Body: ioutil.NopCloser(bytes.NewBuffer([]byte(nil))),
