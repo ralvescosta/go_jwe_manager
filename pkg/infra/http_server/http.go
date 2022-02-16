@@ -5,8 +5,6 @@ import (
 	"net/http"
 )
 
-type HttpMethod string
-
 type HttpResponse struct {
 	StatusCode int
 	Body       interface{}

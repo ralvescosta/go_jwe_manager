@@ -12,7 +12,7 @@ import (
 
 type IHttpServer interface {
 	Setup()
-	RegistreRoute(method HttpMethod, path string, handlers ...gin.HandlerFunc) error
+	RegistreRoute(method string, path string, handlers ...gin.HandlerFunc) error
 	Run() error
 }
 
@@ -28,21 +28,21 @@ func (hs *HttpServer) Setup() {
 	// hs.server.Use(hs.logger.GetHandleFunc())
 }
 
-func (hs HttpServer) RegistreRoute(method HttpMethod, path string, handlers ...gin.HandlerFunc) error {
+func (hs HttpServer) RegistreRoute(method string, path string, handlers ...gin.HandlerFunc) error {
 	switch method {
-	case HttpMethod("POST"):
+	case "POST":
 		hs.server.POST(path, handlers...)
 
-	case HttpMethod("GET"):
+	case "GET":
 		hs.server.GET(path, handlers...)
 
-	case HttpMethod("PUT"):
+	case "PUT":
 		hs.server.PUT(path, handlers...)
 
-	case HttpMethod("PATCH"):
+	case "PATCH":
 		hs.server.PATCH(path, handlers...)
 
-	case HttpMethod("DELETE"):
+	case "DELETE":
 		hs.server.DELETE(path, handlers...)
 	default:
 		return errors.New("http method not allowed")
