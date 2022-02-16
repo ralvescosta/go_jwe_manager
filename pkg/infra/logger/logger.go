@@ -5,9 +5,11 @@ import (
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	"jwemanager/pkg/app/interfaces"
 )
 
-func NewLogger() *zap.Logger {
+func NewLogger() interfaces.ILogger {
 	goEnv := os.Getenv("GO_ENV")
 
 	zapLogLevel := getLogLevel()
