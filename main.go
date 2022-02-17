@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"jwemanager/cmd"
+	"log"
+)
 
 func main() {
-	fmt.Println("Oi")
+	log.Fatal(cmd.HttpServer())
 }
