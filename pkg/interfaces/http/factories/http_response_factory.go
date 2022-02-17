@@ -1,16 +1,13 @@
 package factories
 
 import (
-	httpserver "jwemanager/pkg/infra/http_server"
 	"net/http"
+
+	httpserver "jwemanager/pkg/infra/http_server"
+	vm "jwemanager/pkg/interfaces/http/view_models"
 )
 
 type HttpResponseFactory struct{}
-
-type ErrorMessage struct {
-	StatusCode int    `json:"statusCode"`
-	Message    string `json:"message"`
-}
 
 func (HttpResponseFactory) Ok(body interface{}, headers http.Header) httpserver.HttpResponse {
 	return httpserver.HttpResponse{
@@ -38,7 +35,7 @@ func (HttpResponseFactory) NoContent(headers http.Header) httpserver.HttpRespons
 func (HttpResponseFactory) BadRequest(msg string, headers http.Header) httpserver.HttpResponse {
 	return httpserver.HttpResponse{
 		StatusCode: 400,
-		Body: ErrorMessage{
+		Body: vm.ErrorMessage{
 			StatusCode: 400,
 			Message:    msg,
 		},
@@ -49,7 +46,7 @@ func (HttpResponseFactory) BadRequest(msg string, headers http.Header) httpserve
 func (HttpResponseFactory) Unauthorized(msg string, headers http.Header) httpserver.HttpResponse {
 	return httpserver.HttpResponse{
 		StatusCode: 401,
-		Body: ErrorMessage{
+		Body: vm.ErrorMessage{
 			StatusCode: 401,
 			Message:    msg,
 		},
@@ -60,7 +57,7 @@ func (HttpResponseFactory) Unauthorized(msg string, headers http.Header) httpser
 func (HttpResponseFactory) Forbiden(msg string, headers http.Header) httpserver.HttpResponse {
 	return httpserver.HttpResponse{
 		StatusCode: 403,
-		Body: ErrorMessage{
+		Body: vm.ErrorMessage{
 			StatusCode: 403,
 			Message:    msg,
 		},
@@ -71,7 +68,7 @@ func (HttpResponseFactory) Forbiden(msg string, headers http.Header) httpserver.
 func (HttpResponseFactory) NotFound(msg string, headers http.Header) httpserver.HttpResponse {
 	return httpserver.HttpResponse{
 		StatusCode: 404,
-		Body: ErrorMessage{
+		Body: vm.ErrorMessage{
 			StatusCode: 404,
 			Message:    msg,
 		},
@@ -82,7 +79,7 @@ func (HttpResponseFactory) NotFound(msg string, headers http.Header) httpserver.
 func (HttpResponseFactory) Conflict(msg string, headers http.Header) httpserver.HttpResponse {
 	return httpserver.HttpResponse{
 		StatusCode: 409,
-		Body: ErrorMessage{
+		Body: vm.ErrorMessage{
 			StatusCode: 409,
 			Message:    msg,
 		},
@@ -93,7 +90,7 @@ func (HttpResponseFactory) Conflict(msg string, headers http.Header) httpserver.
 func (HttpResponseFactory) InternalServerError(msg string, headers http.Header) httpserver.HttpResponse {
 	return httpserver.HttpResponse{
 		StatusCode: 500,
-		Body: ErrorMessage{
+		Body: vm.ErrorMessage{
 			StatusCode: 500,
 			Message:    msg,
 		},
