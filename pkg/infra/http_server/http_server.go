@@ -25,7 +25,7 @@ var httpServerWrapper = gin.New
 
 func (hs *HttpServer) Setup() {
 	hs.server = httpServerWrapper()
-	// hs.server.Use(hs.logger.GetHandleFunc())
+	hs.server.Use(GinLogger(hs.logger))
 }
 
 func (hs HttpServer) RegistreRoute(method string, path string, handlers ...gin.HandlerFunc) error {
