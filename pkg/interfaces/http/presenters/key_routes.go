@@ -21,7 +21,7 @@ func (pst KeysRoutes) Register(httpServer httpServer.IHttpServer) {
 	httpServer.RegistreRoute("GET", "/api/v1/keys/:id", adapters.HandlerAdapt(pst.handlers.FindOne, pst.logger))
 }
 
-func NewKeysRoutes(handlers handlers.IKeysHandler, logger interfaces.ILogger) IKeysRoutes {
+func NewKeysRoutes(logger interfaces.ILogger, handlers handlers.IKeysHandler) IKeysRoutes {
 	return KeysRoutes{
 		handlers: handlers,
 		logger:   logger,

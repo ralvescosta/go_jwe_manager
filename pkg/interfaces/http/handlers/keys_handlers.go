@@ -12,15 +12,12 @@ import (
 type IKeysHandler interface {
 	Create(httpRequest httpServer.HttpRequest) httpServer.HttpResponse
 	FindOne(httpRequest httpServer.HttpRequest) httpServer.HttpResponse
-	FindAll(httpRequest httpServer.HttpRequest) httpServer.HttpResponse
-	Update(httpRequest httpServer.HttpRequest) httpServer.HttpResponse
-	Delete(httpRequest httpServer.HttpRequest) httpServer.HttpResponse
 }
 
 type KeysHandler struct {
 	logger interfaces.ILogger
 	factories.HttpResponseFactory
-	usecases usecases.ICreateKeyUseCase
+	createKeyUseCase usecases.ICreateKeyUseCase
 }
 
 func (pst KeysHandler) Create(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
@@ -29,7 +26,7 @@ func (pst KeysHandler) Create(httpRequest httpServer.HttpRequest) httpServer.Htt
 		return pst.BadRequest("body is required", nil)
 	}
 
-	result, err := pst.usecases.Execute(vModel.ToDto())
+	result, err := pst.createKeyUseCase.Execute(vModel.ToDto())
 	if err != nil {
 		return pst.BadRequest("some error occur", nil)
 	}
@@ -39,4 +36,16 @@ func (pst KeysHandler) Create(httpRequest httpServer.HttpRequest) httpServer.Htt
 
 func (pst KeysHandler) FindOne(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
 	return pst.Ok(nil, nil)
+}
+
+func NewKeysHandlers(
+	logger interfaces.ILogger,
+	httpFactory factories.HttpResponseFactory,
+	createKeyUseCase usecases.ICreateKeyUseCase,
+) IKeysHandler {
+	return KeysHandler{
+		logger,
+		httpFactory,
+		createKeyUseCase,
+	}
 }
