@@ -2,7 +2,7 @@ migrate:
 	GO_ENV=dev go run migrations/main.go
 
 run:
-	GO_ENV=dev GIN_MODE=debug go run main.go
+	GO_ENV=development GIN_MODE=debug go run main.go
 
 test:
 	GO_ENV=dev GIN_MODE=debug go test ./pkg/... -v
