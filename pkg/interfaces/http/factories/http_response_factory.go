@@ -97,3 +97,7 @@ func (HttpResponseFactory) InternalServerError(msg string, headers http.Header) 
 		Headers: headers,
 	}
 }
+
+func NewHttpResponseFactory() HttpResponseFactory {
+	return HttpResponseFactory{}
+}
