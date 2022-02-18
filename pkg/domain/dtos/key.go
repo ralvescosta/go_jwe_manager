@@ -1,6 +1,9 @@
 package dtos
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type Key struct {
 	ID        string
@@ -10,4 +13,8 @@ type Key struct {
 	PriKey    string
 	CreatedAt time.Time
 	ExpiredAt time.Time
+}
+
+func (pst Key) MarshalBinary() ([]byte, error) {
+	return json.Marshal(pst)
 }
