@@ -23,10 +23,16 @@ func (vAlidator) ValidateStruct(m interface{}) []dtos.ValidateResult {
 
 	var validatedErros []dtos.ValidateResult
 	for _, validationErr := range validationErrors {
+		message := ""
+		if validationErr.Tag() == "required" {
+			message = fmt.Sprintf("%s is required", validationErr.Field())
+		} else {
+			message = fmt.Sprintf("%s invalid %s", validationErr.Field(), validationErr.Tag())
+		}
 		validatedErros = append(validatedErros, dtos.ValidateResult{
 			IsValid: false,
 			Field:   validationErr.Field(),
-			Message: fmt.Sprintf("%s is invalid", validationErr.Field()),
+			Message: message,
 		})
 	}
 
