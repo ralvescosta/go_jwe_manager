@@ -1,6 +1,8 @@
 package cmd
 
-import "jwemanager/pkg/infra/environments"
+import (
+	"jwemanager/pkg/infra/environments"
+)
 
 func HttpServer() error {
 	err := environments.Configure()
@@ -8,7 +10,11 @@ func HttpServer() error {
 		return err
 	}
 
-	container := NewContainer()
+	container, err := NewContainer()
+	if err != nil {
+		return err
+	}
+
 	container.httpServer.Setup()
 
 	container.keysRoutes.Register(container.httpServer)
