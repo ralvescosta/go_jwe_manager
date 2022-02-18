@@ -1,0 +1,16 @@
+version: "3.7"
+
+services:
+  jwe_manager:
+    restart: unless-stopped
+    build: .
+    ports:
+      - 3333:3333
+    environment: 
+      - GO_ENV: "production"
+      - LOGG_LEVEL: "Info"
+      - GIN_MODE: "release"
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
