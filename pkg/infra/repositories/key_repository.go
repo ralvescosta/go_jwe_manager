@@ -5,17 +5,20 @@ import (
 	"fmt"
 	"jwemanager/pkg/app/interfaces"
 	"jwemanager/pkg/domain/dtos"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 )
 
 type keyRepository struct {
-	logger interfaces.ILogger
-	rdb    *redis.Client
+	logger  interfaces.ILogger
+	guidGen interfaces.IGuidGenerator
+	rdb     *redis.Client
 }
 
 func (pst keyRepository) CreateKey(ctx context.Context, key dtos.Key) (dtos.Key, error) {
-	key.ID = "ai pai."
+	key.ID = pst.guidGen.V4()
+	key.CreatedAt = time.Now()
 
 	if err := pst.rdb.Set(ctx, getRedisKeyByKey(key), key, 0).Err(); err != nil {
 		pst.logger.Error(fmt.Sprintf("[KeyRepository::CreateKey] - Error: %s", err.Error()))
@@ -41,6 +44,6 @@ func (pst keyRepository) GetKeyByID(ctx context.Context, userID, keyID string) (
 	return key, nil
 }
 
-func NewKeyRepository(logger interfaces.ILogger, rdb *redis.Client) interfaces.IKeyRepository {
-	return keyRepository{logger, rdb}
+func NewKeyRepository(logger interfaces.ILogger, guidGen interfaces.IGuidGenerator, rdb *redis.Client) interfaces.IKeyRepository {
+	return keyRepository{logger, guidGen, rdb}
 }
