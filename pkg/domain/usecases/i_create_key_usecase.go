@@ -1,7 +1,10 @@
 package usecases
 
-import "jwemanager/pkg/domain/dtos"
+import (
+	"context"
+	"jwemanager/pkg/domain/dtos"
+)
 
 type ICreateKeyUseCase interface {
-	Execute(key dtos.Key) (dtos.Key, error)
+	Execute(ctx context.Context, key dtos.Key) (dtos.Key, error)
 }
