@@ -15,7 +15,8 @@ type IKeysHandler interface {
 }
 
 type KeysHandler struct {
-	logger interfaces.ILogger
+	logger    interfaces.ILogger
+	validator interfaces.IValidator
 	factories.HttpResponseFactory
 	createKeyUseCase usecases.ICreateKeyUseCase
 }
@@ -26,12 +27,17 @@ func (pst KeysHandler) Create(httpRequest httpServer.HttpRequest) httpServer.Htt
 		return pst.BadRequest("body is required", nil)
 	}
 
-	result, err := pst.createKeyUseCase.Execute(vModel.ToDto())
+	if validationErrs := pst.validator.ValidateStruct(vModel); validationErrs != nil {
+		pst.logger.Error(validationErrs[0].Message)
+		return pst.BadRequest(validationErrs[0].Message, nil)
+	}
+
+	result, err := pst.createKeyUseCase.Execute(httpRequest.Ctx, vModel.ToDto())
 	if err != nil {
 		return pst.BadRequest("some error occur", nil)
 	}
 
-	return pst.Created(result, nil)
+	return pst.Created(vm.NewCreatedKeyViewModel(result), nil)
 }
 
 func (pst KeysHandler) FindOne(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
@@ -40,11 +46,13 @@ func (pst KeysHandler) FindOne(httpRequest httpServer.HttpRequest) httpServer.Ht
 
 func NewKeysHandlers(
 	logger interfaces.ILogger,
+	validator interfaces.IValidator,
 	httpFactory factories.HttpResponseFactory,
 	createKeyUseCase usecases.ICreateKeyUseCase,
 ) IKeysHandler {
 	return KeysHandler{
 		logger,
+		validator,
 		httpFactory,
 		createKeyUseCase,
 	}
