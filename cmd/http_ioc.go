@@ -21,9 +21,9 @@ type webApiContainer struct {
 	keysRoutes presenters.IKeysRoutes
 }
 
-func NewContainer() (webApiContainer, error) {
+func NewContainer(env interfaces.IEnvironments) (webApiContainer, error) {
 	logger := logger.NewLogger()
-	httpServer := httpServer.NewHttpServer(logger)
+	httpServer := httpServer.NewHttpServer(env, logger)
 
 	rdb, err := database.Connection(logger)
 	if err != nil {

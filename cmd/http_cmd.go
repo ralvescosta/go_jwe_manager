@@ -5,12 +5,12 @@ import (
 )
 
 func HttpServer() error {
-	err := environments.Configure()
-	if err != nil {
+	env := environments.NewEnvironment()
+	if err := env.Configure(); err != nil {
 		return err
 	}
 
-	container, err := NewContainer()
+	container, err := NewContainer(env)
 	if err != nil {
 		return err
 	}
