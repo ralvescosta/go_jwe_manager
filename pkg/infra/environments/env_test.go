@@ -13,7 +13,8 @@ func Test_Configure_Env_Without_GoEnv(t *testing.T) {
 		return nil
 	}
 
-	err := Configure()
+	env := NewEnvironment()
+	err := env.Configure()
 
 	if err != nil {
 		t.Error("dotenv need to call only dotEnvConfig function")
@@ -30,8 +31,8 @@ func Test_Configure_Env_With_GoEnv(t *testing.T) {
 		envFile = arg
 		return nil
 	}
-
-	err := Configure()
+	env := NewEnvironment()
+	err := env.Configure()
 
 	if err != nil {
 		t.Error("dotenv need to call only dotEnvConfig function")
