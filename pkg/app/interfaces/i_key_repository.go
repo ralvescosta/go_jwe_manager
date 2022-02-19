@@ -2,9 +2,9 @@ package interfaces
 
 import (
 	"context"
-	"jwemanager/pkg/domain/dtos"
+	valueObjects "jwemanager/pkg/domain/value_objects"
 )
 
 type IKeyRepository interface {
-	CreateKey(context.Context, dtos.Key) (dtos.Key, error)
+	CreateKey(context.Context, valueObjects.Key) (valueObjects.Key, error)
 }
