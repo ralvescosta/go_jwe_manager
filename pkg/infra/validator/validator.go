@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	"jwemanager/pkg/app/interfaces"
-	"jwemanager/pkg/domain/dtos"
+	valueObjects "jwemanager/pkg/domain/value_objects"
 
 	"github.com/go-playground/validator/v10"
 )
 
 type vAlidator struct{}
 
-func (vAlidator) ValidateStruct(m interface{}) []dtos.ValidateResult {
+func (vAlidator) ValidateStruct(m interface{}) []valueObjects.ValidateResult {
 	v := validator.New()
 	err := v.Struct(m)
 
@@ -21,7 +21,7 @@ func (vAlidator) ValidateStruct(m interface{}) []dtos.ValidateResult {
 
 	validationErrors := err.(validator.ValidationErrors)
 
-	var validatedErros []dtos.ValidateResult
+	var validatedErros []valueObjects.ValidateResult
 	for _, validationErr := range validationErrors {
 		message := ""
 		if validationErr.Tag() == "required" {
@@ -29,7 +29,7 @@ func (vAlidator) ValidateStruct(m interface{}) []dtos.ValidateResult {
 		} else {
 			message = fmt.Sprintf("%s invalid %s", validationErr.Field(), validationErr.Tag())
 		}
-		validatedErros = append(validatedErros, dtos.ValidateResult{
+		validatedErros = append(validatedErros, valueObjects.ValidateResult{
 			IsValid: false,
 			Field:   validationErr.Field(),
 			Message: message,

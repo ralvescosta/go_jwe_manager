@@ -1,9 +1,9 @@
 package interfaces
 
 import (
-	"jwemanager/pkg/domain/dtos"
+	valueObjects "jwemanager/pkg/domain/value_objects"
 )
 
 type IValidator interface {
-	ValidateStruct(data interface{}) []dtos.ValidateResult
+	ValidateStruct(data interface{}) []valueObjects.ValidateResult
 }
