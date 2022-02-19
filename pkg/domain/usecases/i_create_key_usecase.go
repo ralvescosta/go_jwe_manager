@@ -2,9 +2,9 @@ package usecases
 
 import (
 	"context"
-	"jwemanager/pkg/domain/dtos"
+	valueObjects "jwemanager/pkg/domain/value_objects"
 )
 
 type ICreateKeyUseCase interface {
-	Execute(ctx context.Context, key dtos.Key) (dtos.Key, error)
+	Execute(ctx context.Context, key valueObjects.Key) (valueObjects.Key, error)
 }
