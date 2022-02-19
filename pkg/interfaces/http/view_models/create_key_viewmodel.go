@@ -1,7 +1,9 @@
 package viewmodels
 
 import (
-	"jwemanager/pkg/domain/dtos"
+	"crypto/x509"
+	"encoding/base64"
+	valueObjects "jwemanager/pkg/domain/value_objects"
 	"time"
 )
 
@@ -17,18 +19,18 @@ type CreatedKeyViewModel struct {
 	ExpiredAt string `json:"expired_at"`
 }
 
-func (pst CreateKeyViewModel) ToDto() dtos.Key {
-	return dtos.Key{
+func (pst CreateKeyViewModel) ToDto() valueObjects.Key {
+	return valueObjects.Key{
 		UserID: pst.UserID,
 		KeyID:  pst.KeyID,
 	}
 }
 
-func NewCreatedKeyViewModel(key dtos.Key) CreatedKeyViewModel {
+func NewCreatedKeyViewModel(key valueObjects.Key) CreatedKeyViewModel {
 	return CreatedKeyViewModel{
 		UserID:    key.UserID,
 		KeyID:     key.KeyID,
-		PubKey:    key.PubKey,
+		PubKey:    base64.RawStdEncoding.EncodeToString(x509.MarshalPKCS1PublicKey(key.PubKey)),
 		ExpiredAt: key.ExpiredAt.Format(time.RFC3339),
 	}
 }
