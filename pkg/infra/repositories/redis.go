@@ -2,10 +2,10 @@ package repositories
 
 import (
 	"fmt"
-	"jwemanager/pkg/domain/dtos"
+	valueObjects "jwemanager/pkg/domain/value_objects"
 )
 
-func getRedisKeyByKey(key dtos.Key) string {
+func getRedisKeyByKey(key valueObjects.Key) string {
 	return fmt.Sprintf("%s:%s", key.UserID, key.KeyID)
 }
 
