@@ -3,6 +3,7 @@ package factories
 import (
 	"net/http"
 
+	"jwemanager/pkg/app/errors"
 	httpserver "jwemanager/pkg/infra/http_server"
 	vm "jwemanager/pkg/interfaces/http/view_models"
 )
@@ -95,6 +96,17 @@ func (HttpResponseFactory) InternalServerError(msg string, headers http.Header) 
 			Message:    msg,
 		},
 		Headers: headers,
+	}
+}
+
+func (pst HttpResponseFactory) ErrorResponseMapper(err error, headers http.Header) httpserver.HttpResponse {
+	switch err.(type) {
+	case errors.NotFoundError:
+		return pst.NotFound(err.Error(), headers)
+	case errors.ConflictError:
+		return pst.Conflict(err.Error(), headers)
+	default:
+		return pst.InternalServerError(err.Error(), headers)
 	}
 }
 

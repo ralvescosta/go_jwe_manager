@@ -15,9 +15,9 @@ type IKeysHandler interface {
 }
 
 type KeysHandler struct {
-	logger    interfaces.ILogger
-	validator interfaces.IValidator
-	factories.HttpResponseFactory
+	logger           interfaces.ILogger
+	validator        interfaces.IValidator
+	httpResFactory   factories.HttpResponseFactory
 	createKeyUseCase usecases.ICreateKeyUseCase
 	getKeyUseCse     usecases.IGetKeyUseCase
 }
@@ -25,38 +25,38 @@ type KeysHandler struct {
 func (pst KeysHandler) Create(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
 	vModel := vm.CreateKeyViewModel{}
 	if err := json.Unmarshal(httpRequest.Body, &vModel); err != nil {
-		return pst.BadRequest("body is required", nil)
+		return pst.httpResFactory.BadRequest("body is required", nil)
 	}
 
 	if validationErrs := pst.validator.ValidateStruct(vModel); validationErrs != nil {
 		pst.logger.Error(validationErrs[0].Message)
-		return pst.BadRequest(validationErrs[0].Message, nil)
+		return pst.httpResFactory.BadRequest(validationErrs[0].Message, nil)
 	}
 
 	result, err := pst.createKeyUseCase.Execute(httpRequest.Ctx, vModel.ToDto())
 	if err != nil {
-		return pst.BadRequest("some error occur", nil)
+		return pst.httpResFactory.ErrorResponseMapper(err, nil)
 	}
 
-	return pst.Created(vm.NewResultKeyViewModel(result), nil)
+	return pst.httpResFactory.Created(vm.NewResultKeyViewModel(result), nil)
 }
 
 func (pst KeysHandler) FindOne(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
 	userID, ok := httpRequest.Params["user_id"]
 	if !ok {
-		return pst.BadRequest("user_id is required", nil)
+		return pst.httpResFactory.BadRequest("user_id is required", nil)
 	}
 	keyID, ok := httpRequest.Params["key_id"]
 	if !ok {
-		return pst.BadRequest("key_id is required", nil)
+		return pst.httpResFactory.BadRequest("key_id is required", nil)
 	}
 
 	result, err := pst.getKeyUseCse.GetKey(httpRequest.Ctx, userID, keyID)
 	if err != nil {
-		return pst.BadRequest("some error occur", nil)
+		return pst.httpResFactory.ErrorResponseMapper(err, nil)
 	}
 
-	return pst.Ok(vm.NewResultKeyViewModel(result), nil)
+	return pst.httpResFactory.Ok(vm.NewResultKeyViewModel(result), nil)
 }
 
 func NewKeysHandlers(

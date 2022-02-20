@@ -2,6 +2,7 @@ package environments
 
 import (
 	"fmt"
+	"jwemanager/pkg/app/errors"
 	"jwemanager/pkg/app/interfaces"
 	"os"
 
@@ -18,7 +19,12 @@ type env struct {
 }
 
 func (pst env) Configure() error {
-	return dotEnvConfig(fmt.Sprintf(".env.%s", pst._GO_ENV))
+	err := dotEnvConfig(fmt.Sprintf(".env.%s", pst._GO_ENV))
+	if err != nil {
+		return errors.NewInternalError(err.Error())
+	}
+
+	return nil
 }
 
 func (pst env) GO_ENV() string {

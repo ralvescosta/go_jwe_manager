@@ -2,11 +2,11 @@ package http_server
 
 import (
 	"context"
+	"jwemanager/pkg/app/errors"
 	"jwemanager/pkg/app/interfaces"
 	"net/http"
 	"time"
 
-	"errors"
 	"fmt"
 	"os"
 
@@ -49,7 +49,7 @@ func (hs HttpServer) RegistreRoute(method string, path string, handlers ...gin.H
 	case "DELETE":
 		hs.router.DELETE(path, handlers...)
 	default:
-		return errors.New("http method not allowed")
+		return errors.NewInternalError("http method not allowed")
 	}
 	return nil
 }
@@ -73,7 +73,12 @@ func (pst *HttpServer) Setup() {
 }
 
 func (pst HttpServer) Run() error {
-	return pst.server.ListenAndServe()
+	err := pst.server.ListenAndServe()
+	if err != nil {
+		errors.NewInternalError(err.Error())
+	}
+
+	return nil
 }
 
 func (pst HttpServer) gracefullShutdown() {

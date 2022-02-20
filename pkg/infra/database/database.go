@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"jwemanager/pkg/app/errors"
 	"jwemanager/pkg/app/interfaces"
 
 	"github.com/go-redis/redis/v8"
@@ -19,12 +20,12 @@ func Connection(logger interfaces.ILogger, shotdown chan bool) (*redis.Client, e
 
 	db, err := strconv.Atoi(os.Getenv("REDIS_DB"))
 	if err != nil {
-		return nil, err
+		return nil, errors.NewInternalError(err.Error())
 	}
 
 	secondsToSleep, err := strconv.Atoi(os.Getenv("REDIS_SECONDS_TO_PING"))
 	if err != nil {
-		return nil, err
+		return nil, errors.NewInternalError(err.Error())
 	}
 
 	rdb := redis.NewClient(&redis.Options{
@@ -36,7 +37,7 @@ func Connection(logger interfaces.ILogger, shotdown chan bool) (*redis.Client, e
 	_, err = rdb.Ping(context.Background()).Result()
 	if err != nil {
 		logger.Error(fmt.Sprintf("[Database::Connection] - Redis Connection failure : %s", err.Error()))
-		return nil, err
+		return nil, errors.NewInternalError(err.Error())
 	}
 
 	go signalShotdown(rdb, logger, secondsToSleep, shotdown)
