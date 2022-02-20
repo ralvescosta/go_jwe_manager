@@ -17,13 +17,14 @@ func NewLogger() interfaces.ILogger {
 	var zapInstance *zap.Logger
 	switch goEnv {
 	case "production":
-		zapInstance, _ = zap.NewProduction(zap.IncreaseLevel(zapLogLevel), zap.AddStacktrace(zap.ErrorLevel))
 	case "staging":
 		zapInstance, _ = zap.NewProduction(zap.IncreaseLevel(zapLogLevel), zap.AddStacktrace(zap.ErrorLevel))
 	case "development":
-		zapInstance, _ = zap.NewDevelopment(zap.IncreaseLevel(zapLogLevel), zap.AddStacktrace(zap.ErrorLevel))
 	case "test":
-		zapInstance, _ = zap.NewDevelopment(zap.IncreaseLevel(zapLogLevel), zap.AddStacktrace(zap.ErrorLevel))
+		config := zap.NewDevelopmentConfig()
+		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+		config.Level.Enabled(zapLogLevel)
+		zapInstance, _ = config.Build()
 	default:
 		break
 	}
@@ -34,15 +35,15 @@ func NewLogger() interfaces.ILogger {
 func getLogLevel() zapcore.Level {
 	logLevel := os.Getenv("LOG_LEVEL")
 	switch logLevel {
-	case "Debug":
+	case "debug":
 		return zap.DebugLevel
-	case "Info":
+	case "info":
 		return zap.InfoLevel
-	case "Warn":
+	case "warn":
 		return zap.WarnLevel
-	case "Error":
+	case "error":
 		return zap.ErrorLevel
-	case "Panic":
+	case "panic":
 		return zap.PanicLevel
 	default:
 		return zap.InfoLevel
