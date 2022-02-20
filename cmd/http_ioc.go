@@ -34,11 +34,12 @@ func NewContainer(env interfaces.IEnvironments) (webApiContainer, error) {
 	httpResponseFactory := factories.NewHttpResponseFactory()
 	vValidator := validator.NewValidator()
 	guidGen := guidGenerator.NewGuidGenerator()
-	keyGen := keyGenerator.NewKeyGenerator()
+	keyGen := keyGenerator.NewKeyGenerator(logger)
 	keyRepository := repositories.NewKeyRepository(logger, guidGen, rdb)
 
-	createKeyUseCase := usecases.NewCreateKeyUseCase(logger, keyRepository, keyGen)
-	keyHandlers := handlers.NewKeysHandlers(logger, vValidator, httpResponseFactory, createKeyUseCase)
+	createKeyUseCase := usecases.NewCreateKeyUseCase(logger, keyRepository, guidGen, keyGen)
+	getKeyUseCase := usecases.NewGetKeyUseCase(logger, keyRepository)
+	keyHandlers := handlers.NewKeysHandlers(logger, vValidator, httpResponseFactory, createKeyUseCase, getKeyUseCase)
 	keysRoutes := presenters.NewKeysRoutes(logger, keyHandlers)
 
 	return webApiContainer{
