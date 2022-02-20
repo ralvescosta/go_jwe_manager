@@ -18,7 +18,7 @@ type KeysRoutes struct {
 
 func (pst KeysRoutes) Register(httpServer httpServer.IHttpServer) {
 	httpServer.RegistreRoute("POST", "/api/v1/keys", adapters.HandlerAdapt(pst.handlers.Create, pst.logger))
-	httpServer.RegistreRoute("GET", "/api/v1/keys/:id", adapters.HandlerAdapt(pst.handlers.FindOne, pst.logger))
+	httpServer.RegistreRoute("GET", "/api/v1/keys/:user_id/:key_id", adapters.HandlerAdapt(pst.handlers.FindOne, pst.logger))
 }
 
 func NewKeysRoutes(logger interfaces.ILogger, handlers handlers.IKeysHandler) IKeysRoutes {
