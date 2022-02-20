@@ -18,6 +18,28 @@ type KeyModel struct {
 	ExpiredAt time.Time `json:"expired_at"`
 }
 
+func (pst KeyModel) ToValueObject() (valueObjects.Key, error) {
+	pubKey, err := x509.ParsePKCS1PublicKey([]byte(pst.PubKey))
+	if err != nil {
+		return valueObjects.Key{}, err
+	}
+
+	privKey, err := x509.ParsePKCS1PrivateKey([]byte(pst.PriKey))
+	if err != nil {
+		return valueObjects.Key{}, err
+	}
+
+	return valueObjects.Key{
+		ID:        pst.ID,
+		UserID:    pst.UserID,
+		KeyID:     pst.KeyID,
+		PubKey:    pubKey,
+		PriKey:    privKey,
+		CreatedAt: pst.CreatedAt,
+		ExpiredAt: pst.ExpiredAt,
+	}, nil
+}
+
 func ToKeyModel(vo valueObjects.Key) KeyModel {
 	return KeyModel{
 		ID:        vo.ID,
@@ -32,4 +54,10 @@ func ToKeyModel(vo valueObjects.Key) KeyModel {
 
 func (pst KeyModel) MarshalBinary() ([]byte, error) {
 	return json.Marshal(pst)
+}
+
+func (pst *KeyModel) UnmarshalBinary(data []byte) error {
+	err := json.Unmarshal(data, pst)
+
+	return err
 }
