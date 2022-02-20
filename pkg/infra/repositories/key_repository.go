@@ -36,13 +36,19 @@ func (pst keyRepository) GetKeyByID(ctx context.Context, userID, keyID string) (
 		return valueObjects.Key{}, err
 	}
 
-	var key valueObjects.Key
-	if err := result.Scan(&key); err != nil {
+	var keyModel models.KeyModel
+	if err := result.Scan(&keyModel); err != nil {
 		pst.logger.Error(fmt.Sprintf("[KeyRepository::GetKeyByID] - Error: %s", err.Error()))
 		return valueObjects.Key{}, err
 	}
 
-	return key, nil
+	vo, err := keyModel.ToValueObject()
+	if err != nil {
+		pst.logger.Error(fmt.Sprintf("[KeyRepository::GetKeyByID] - Error: %s", err.Error()))
+		return valueObjects.Key{}, err
+	}
+
+	return vo, nil
 }
 
 func NewKeyRepository(logger interfaces.ILogger, guidGen interfaces.IGuidGenerator, rdb *redis.Client) interfaces.IKeyRepository {

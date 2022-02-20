@@ -6,5 +6,6 @@ import (
 )
 
 type IKeyRepository interface {
-	CreateKey(context.Context, valueObjects.Key) (valueObjects.Key, error)
+	CreateKey(ctx context.Context, key valueObjects.Key) (valueObjects.Key, error)
+	GetKeyByID(ctx context.Context, userID, keyID string) (valueObjects.Key, error)
 }
