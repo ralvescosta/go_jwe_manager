@@ -11,11 +11,14 @@ import (
 type createKeyUseCase struct {
 	logger  interfaces.ILogger
 	keyRepo interfaces.IKeyRepository
+	guidGen interfaces.IGuidGenerator
 	keyGen  interfaces.IKeyGenerator
 }
 
 func (pst createKeyUseCase) Execute(ctx context.Context, key valueObjects.Key) (valueObjects.Key, error) {
 	key.ExpiredAt = time.Now().Add(time.Hour * 720)
+	key.KeyID = pst.guidGen.V4()
+
 	rsaKeys, err := pst.keyGen.GenerateKey()
 	if err != nil {
 		return valueObjects.Key{}, err
@@ -35,7 +38,8 @@ func (pst createKeyUseCase) Execute(ctx context.Context, key valueObjects.Key) (
 func NewCreateKeyUseCase(
 	logger interfaces.ILogger,
 	keyRepo interfaces.IKeyRepository,
+	guidGen interfaces.IGuidGenerator,
 	keyGen interfaces.IKeyGenerator,
 ) usecases.ICreateKeyUseCase {
-	return createKeyUseCase{logger, keyRepo, keyGen}
+	return createKeyUseCase{logger, keyRepo, guidGen, keyGen}
 }
