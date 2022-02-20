@@ -23,10 +23,12 @@ type webApiContainer struct {
 }
 
 func NewContainer(env interfaces.IEnvironments) (webApiContainer, error) {
-	logger := logger.NewLogger()
-	httpServer := httpServer.NewHttpServer(env, logger)
+	var shutdown = make(chan bool)
 
-	rdb, err := database.Connection(logger)
+	logger := logger.NewLogger()
+	httpServer := httpServer.NewHttpServer(env, logger, shutdown)
+
+	rdb, err := database.Connection(logger, shutdown)
 	if err != nil {
 		return webApiContainer{}, err
 	}

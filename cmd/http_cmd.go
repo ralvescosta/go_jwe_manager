@@ -15,9 +15,9 @@ func HttpServer() error {
 		return err
 	}
 
-	container.httpServer.Setup()
-
+	container.httpServer.Default()
 	container.keysRoutes.Register(container.httpServer)
+	container.httpServer.Setup()
 
 	if err := container.httpServer.Run(); err != nil {
 		return err

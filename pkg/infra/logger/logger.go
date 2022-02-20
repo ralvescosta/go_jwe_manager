@@ -16,11 +16,9 @@ func NewLogger() interfaces.ILogger {
 
 	var zapInstance *zap.Logger
 	switch goEnv {
-	case "production":
-	case "staging":
+	case "production", "staging":
 		zapInstance, _ = zap.NewProduction(zap.IncreaseLevel(zapLogLevel), zap.AddStacktrace(zap.ErrorLevel))
-	case "development":
-	case "test":
+	case "development", "test":
 		config := zap.NewDevelopmentConfig()
 		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 		config.Level.Enabled(zapLogLevel)

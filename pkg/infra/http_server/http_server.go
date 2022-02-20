@@ -1,7 +1,10 @@
 package http_server
 
 import (
+	"context"
 	"jwemanager/pkg/app/interfaces"
+	"net/http"
+	"time"
 
 	"errors"
 	"fmt"
@@ -11,60 +14,84 @@ import (
 )
 
 type IHttpServer interface {
-	Setup()
+	Default()
 	RegistreRoute(method string, path string, handlers ...gin.HandlerFunc) error
+	Setup()
 	Run() error
 }
 
 type HttpServer struct {
-	env    interfaces.IEnvironments
-	logger interfaces.ILogger
-	server *gin.Engine
+	env      interfaces.IEnvironments
+	logger   interfaces.ILogger
+	router   *gin.Engine
+	server   *http.Server
+	shotdown chan bool
 }
 
 var httpServerWrapper = gin.New
 
-func (pst *HttpServer) Setup() {
-	pst.server = httpServerWrapper()
-	pst.server.Use(GinLogger(pst.logger))
-	pst.server.SetTrustedProxies(nil)
+func (pst *HttpServer) Default() {
+	pst.router = httpServerWrapper()
+	pst.router.Use(GinLogger(pst.logger))
+	pst.router.SetTrustedProxies(nil)
 }
 
 func (hs HttpServer) RegistreRoute(method string, path string, handlers ...gin.HandlerFunc) error {
 	switch method {
 	case "POST":
-		hs.server.POST(path, handlers...)
+		hs.router.POST(path, handlers...)
 	case "GET":
-		hs.server.GET(path, handlers...)
+		hs.router.GET(path, handlers...)
 	case "PUT":
-		hs.server.PUT(path, handlers...)
+		hs.router.PUT(path, handlers...)
 	case "PATCH":
-		hs.server.PATCH(path, handlers...)
+		hs.router.PATCH(path, handlers...)
 	case "DELETE":
-		hs.server.DELETE(path, handlers...)
+		hs.router.DELETE(path, handlers...)
 	default:
 		return errors.New("http method not allowed")
 	}
 	return nil
 }
 
-func (pst HttpServer) Run() error {
+func (pst *HttpServer) Setup() {
 	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
-	url := fmt.Sprintf("%s:%s", host, port)
+	addr := fmt.Sprintf("%s:%s", host, port)
 
-	if pst.env.GO_ENV() != pst.env.PROD_ENV() {
-		certPath := os.Getenv("TLS_CERT_PATH")
-		keyPath := os.Getenv("TLS_KEY_PATH")
-		return pst.server.RunTLS(url, certPath, keyPath)
+	pst.server = &http.Server{
+		Addr:    addr,
+		Handler: pst.router,
 	}
 
-	return pst.server.Run(url)
+	go pst.gracefullShutdown()
+	// if pst.env.GO_ENV() != pst.env.PROD_ENV() {
+	// 	certPath := os.Getenv("TLS_CERT_PATH")
+	// 	keyPath := os.Getenv("TLS_KEY_PATH")
+	// 	return pst.router.RunTLS(addr, certPath, keyPath)
+	// }
 }
 
-func NewHttpServer(environments interfaces.IEnvironments, logger interfaces.ILogger) IHttpServer {
+func (pst HttpServer) Run() error {
+	return pst.server.ListenAndServe()
+}
+
+func (pst HttpServer) gracefullShutdown() {
+	<-pst.shotdown
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := pst.server.Shutdown(ctx); err != nil {
+		pst.logger.Error("[HttpServer::GracefullShutdown] - could'ent shutdown properly")
+		return
+	}
+}
+
+func NewHttpServer(environments interfaces.IEnvironments, logger interfaces.ILogger, shotdown chan bool) IHttpServer {
 	return &HttpServer{
-		env:    environments,
-		logger: logger,
+		env:      environments,
+		logger:   logger,
+		shotdown: shotdown,
 	}
 }
