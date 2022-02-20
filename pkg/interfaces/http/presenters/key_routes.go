@@ -12,8 +12,8 @@ type IKeysRoutes interface {
 }
 
 type KeysRoutes struct {
-	handlers handlers.IKeysHandler
 	logger   interfaces.ILogger
+	handlers handlers.IKeysHandler
 }
 
 func (pst KeysRoutes) Register(httpServer httpServer.IHttpServer) {
@@ -23,7 +23,7 @@ func (pst KeysRoutes) Register(httpServer httpServer.IHttpServer) {
 
 func NewKeysRoutes(logger interfaces.ILogger, handlers handlers.IKeysHandler) IKeysRoutes {
 	return KeysRoutes{
-		handlers: handlers,
 		logger:   logger,
+		handlers: handlers,
 	}
 }
