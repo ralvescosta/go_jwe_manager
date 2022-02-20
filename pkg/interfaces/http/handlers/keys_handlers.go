@@ -19,6 +19,7 @@ type KeysHandler struct {
 	validator interfaces.IValidator
 	factories.HttpResponseFactory
 	createKeyUseCase usecases.ICreateKeyUseCase
+	getKeyUseCse     usecases.IGetKeyUseCase
 }
 
 func (pst KeysHandler) Create(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
@@ -37,11 +38,25 @@ func (pst KeysHandler) Create(httpRequest httpServer.HttpRequest) httpServer.Htt
 		return pst.BadRequest("some error occur", nil)
 	}
 
-	return pst.Created(vm.NewCreatedKeyViewModel(result), nil)
+	return pst.Created(vm.NewResultKeyViewModel(result), nil)
 }
 
 func (pst KeysHandler) FindOne(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
-	return pst.Ok(nil, nil)
+	userID, ok := httpRequest.Params["user_id"]
+	if !ok {
+		return pst.BadRequest("user_id is required", nil)
+	}
+	keyID, ok := httpRequest.Params["key_id"]
+	if !ok {
+		return pst.BadRequest("key_id is required", nil)
+	}
+
+	result, err := pst.getKeyUseCse.GetKey(httpRequest.Ctx, userID, keyID)
+	if err != nil {
+		return pst.BadRequest("some error occur", nil)
+	}
+
+	return pst.Ok(vm.NewResultKeyViewModel(result), nil)
 }
 
 func NewKeysHandlers(
@@ -49,11 +64,13 @@ func NewKeysHandlers(
 	validator interfaces.IValidator,
 	httpFactory factories.HttpResponseFactory,
 	createKeyUseCase usecases.ICreateKeyUseCase,
+	getKeyUseCase usecases.IGetKeyUseCase,
 ) IKeysHandler {
 	return KeysHandler{
 		logger,
 		validator,
 		httpFactory,
 		createKeyUseCase,
+		getKeyUseCase,
 	}
 }
