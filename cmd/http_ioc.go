@@ -3,6 +3,7 @@ package cmd
 import (
 	"jwemanager/pkg/app/interfaces"
 	"jwemanager/pkg/app/usecases"
+	"jwemanager/pkg/infra/crypto"
 	"jwemanager/pkg/infra/database"
 	guidGenerator "jwemanager/pkg/infra/guid_generator"
 	httpServer "jwemanager/pkg/infra/http_server"
@@ -40,13 +41,16 @@ func NewContainer(env interfaces.IEnvironments) (webApiContainer, error) {
 	guidGen := guidGenerator.NewGuidGenerator()
 	keyGen := keyGenerator.NewKeyGenerator(logger)
 	keyRepository := repositories.NewKeyRepository(logger, guidGen, rdb)
+	crypto := crypto.NewCrypto(logger)
 
 	createKeyUseCase := usecases.NewCreateKeyUseCase(logger, keyRepository, guidGen, keyGen)
 	getKeyUseCase := usecases.NewGetKeyUseCase(logger, keyRepository)
 	keyHandlers := handlers.NewKeysHandlers(logger, vValidator, httpResponseFactory, createKeyUseCase, getKeyUseCase)
 	keysRoutes := presenters.NewKeysRoutes(logger, keyHandlers)
 
-	cryptHandlers := handlers.NewCryptHandler(logger, vValidator, httpResponseFactory)
+	encryptUseCase := usecases.NewEncryptUseCase(logger, keyRepository, crypto)
+	decryptUseCase := usecases.NewDecryptUseCase(logger, keyRepository, crypto)
+	cryptHandlers := handlers.NewCryptHandler(logger, vValidator, httpResponseFactory, encryptUseCase, decryptUseCase)
 	cryptRoutes := presenters.NewCryptRoutes(logger, cryptHandlers)
 
 	healthHandlers := handlers.NewHealthHandler(logger, httpResponseFactory, rdb)
