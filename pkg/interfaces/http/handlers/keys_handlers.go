@@ -33,7 +33,7 @@ func (pst KeysHandler) Create(httpRequest httpServer.HttpRequest) httpServer.Htt
 		return pst.httpResFactory.BadRequest(validationErrs[0].Message, nil)
 	}
 
-	result, err := pst.createKeyUseCase.Execute(httpRequest.Ctx, vModel.ToDto())
+	result, err := pst.createKeyUseCase.Execute(httpRequest.Ctx, vModel.ToValueObject())
 	if err != nil {
 		return pst.httpResFactory.ErrorResponseMapper(err, nil)
 	}
