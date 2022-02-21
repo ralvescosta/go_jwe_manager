@@ -18,7 +18,7 @@ type ResultKeyViewModel struct {
 	ExpiredAt string `json:"expired_at"`
 }
 
-func (pst CreateKeyViewModel) ToDto() valueObjects.Key {
+func (pst CreateKeyViewModel) ToValueObject() valueObjects.Key {
 	return valueObjects.Key{
 		UserID: pst.UserID,
 	}
