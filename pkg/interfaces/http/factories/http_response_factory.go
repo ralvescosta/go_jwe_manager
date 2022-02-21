@@ -55,7 +55,7 @@ func (HttpResponseFactory) Unauthorized(msg string, headers http.Header) httpser
 	}
 }
 
-func (HttpResponseFactory) Forbiden(msg string, headers http.Header) httpserver.HttpResponse {
+func (HttpResponseFactory) Forbidden(msg string, headers http.Header) httpserver.HttpResponse {
 	return httpserver.HttpResponse{
 		StatusCode: 403,
 		Body: vm.ErrorMessage{
@@ -96,6 +96,14 @@ func (HttpResponseFactory) InternalServerError(msg string, headers http.Header) 
 			Message:    msg,
 		},
 		Headers: headers,
+	}
+}
+
+func (HttpResponseFactory) GenericResponse(statusCode int, body interface{}, headers http.Header) httpserver.HttpResponse {
+	return httpserver.HttpResponse{
+		StatusCode: statusCode,
+		Body:       body,
+		Headers:    headers,
 	}
 }
 
