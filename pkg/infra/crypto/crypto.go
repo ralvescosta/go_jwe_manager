@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"jwemanager/pkg/app/errors"
 	"jwemanager/pkg/app/interfaces"
 
 	"github.com/lestrrat-go/jwx/jwa"
@@ -15,36 +16,39 @@ type crypto struct {
 	logger interfaces.ILogger
 }
 
-func (pst crypto) Encrypt(pubKey rsa.PrivateKey, data interface{}) ([]byte, error) {
+func (pst crypto) Encrypt(pubKey *rsa.PublicKey, data map[string]interface{}) ([]byte, error) {
 	dataToByte, err := json.Marshal(data)
 	if err != nil {
 		pst.logger.Error(fmt.Sprintf("[Crypto::Encrypt] Marshal Error: %s", err.Error()))
-		return nil, err
+		return nil, errors.NewInternalError(err.Error())
 	}
 
 	encrypted, err := jwe.Encrypt(dataToByte, jwa.RSA_OAEP_256, pubKey, jwa.A256CBC_HS512, jwa.NoCompress)
 	if err != nil {
 		pst.logger.Error(fmt.Sprintf("[Crypto::Encrypt] JWE Encrypt Error: %s", err.Error()))
-		return nil, err
+		return nil, errors.NewInternalError(err.Error())
 	}
 
 	return encrypted, nil
 }
 
-func (pst crypto) Decrypt(privKey *rsa.PrivateKey, data []byte) (interface{}, error) {
-
+func (pst crypto) Decrypt(privKey *rsa.PrivateKey, data []byte) (map[string]interface{}, error) {
 	data, err := jwe.Decrypt(data, jwa.RSA_OAEP_256, privKey)
-
-	pst.logger.Debug(fmt.Sprintf("%v", data))
-
 	if err != nil {
 		pst.logger.Error(fmt.Sprintf("[Crypto::Encrypt] JWE Decrypt Error: %s", err.Error()))
-		return nil, err
+		return nil, errors.NewInternalError(err.Error())
 	}
 
-	return nil, nil
+	var decrypted = make(map[string]interface{})
+	err = json.Unmarshal(data, &decrypted)
+	if err != nil {
+		pst.logger.Error(fmt.Sprintf("[Crypto::Encrypt] Decrypted Data Unmarshaler Error: %s", err.Error()))
+		return nil, errors.NewInternalError(err.Error())
+	}
+
+	return decrypted, nil
 }
 
-func NewCrypto() interfaces.ICrypto {
-	return crypto{}
+func NewCrypto(logger interfaces.ILogger) interfaces.ICrypto {
+	return crypto{logger}
 }
