@@ -12,3 +12,4 @@ The main technologies used to built this project was **GoLang** and **Redis**. T
 
 TODO:
  - Gin Recovery strategy
+ - Configure TLS in development environment
