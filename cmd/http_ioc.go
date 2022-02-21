@@ -19,8 +19,9 @@ type webApiContainer struct {
 	logger     interfaces.ILogger
 	httpServer httpServer.IHttpServer
 
-	keysRoutes  presenters.IKeysRoutes
-	cryptRoutes presenters.ICryptRoutes
+	keysRoutes   presenters.IKeysRoutes
+	cryptRoutes  presenters.ICryptRoutes
+	healthRoutes presenters.IHealthRoutes
 }
 
 func NewContainer(env interfaces.IEnvironments) (webApiContainer, error) {
@@ -48,11 +49,15 @@ func NewContainer(env interfaces.IEnvironments) (webApiContainer, error) {
 	cryptHandlers := handlers.NewCryptHandler(logger, vValidator, httpResponseFactory)
 	cryptRoutes := presenters.NewCryptRoutes(logger, cryptHandlers)
 
+	healthHandlers := handlers.NewHealthHandler(logger, httpResponseFactory, rdb)
+	healthRoutes := presenters.NewHealthRoutes(logger, healthHandlers)
+
 	return webApiContainer{
 		logger,
 		httpServer,
 
 		keysRoutes,
 		cryptRoutes,
+		healthRoutes,
 	}, nil
 }

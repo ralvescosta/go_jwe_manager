@@ -18,6 +18,7 @@ func HttpServer() error {
 	container.httpServer.Default()
 	container.keysRoutes.Register(container.httpServer)
 	container.cryptRoutes.Register(container.httpServer)
+	container.healthRoutes.Register(container.httpServer)
 	container.httpServer.Setup()
 
 	if err := container.httpServer.Run(); err != nil {
