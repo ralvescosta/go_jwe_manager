@@ -22,6 +22,7 @@ type IHttpServer interface {
 
 type HttpServer struct {
 	env      interfaces.IEnvironments
+	addr     string
 	logger   interfaces.ILogger
 	router   *gin.Engine
 	server   *http.Server
@@ -58,28 +59,31 @@ func (hs HttpServer) RegistreRoute(method string, path string, handlers ...gin.H
 func (pst *HttpServer) Setup() {
 	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
-	addr := fmt.Sprintf("%s:%s", host, port)
+	pst.addr = fmt.Sprintf("%s:%s", host, port)
 
 	pst.server = &http.Server{
-		Addr:    addr,
+		Addr:    pst.addr,
 		Handler: pst.router,
 	}
 
 	go pst.gracefullShutdown()
-	// if pst.env.GO_ENV() != pst.env.PROD_ENV() {
-	// 	certPath := os.Getenv("TLS_CERT_PATH")
-	// 	keyPath := os.Getenv("TLS_KEY_PATH")
-	// 	return pst.router.RunTLS(addr, certPath, keyPath)
-	// }
 }
 
 func (pst HttpServer) Run() error {
-	err := pst.server.ListenAndServe()
-	if err != nil {
-		errors.NewInternalError(err.Error())
+	if pst.env.GO_ENV() != pst.env.PROD_ENV() {
+		certPath := os.Getenv("TLS_CERT_PATH")
+		keyPath := os.Getenv("TLS_KEY_PATH")
+
+		pst.logger.Info(fmt.Sprintf("[HttpServer::Run] - Server running at: https://%s", pst.addr))
+		err := pst.server.ListenAndServeTLS(certPath, keyPath)
+
+		return errors.NewInternalError(err.Error())
 	}
 
-	return nil
+	pst.logger.Info(fmt.Sprintf("[HttpServer::Run] - Server running at: http://%s", pst.addr))
+	err := pst.server.ListenAndServe()
+
+	return errors.NewInternalError(err.Error())
 }
 
 func (pst HttpServer) gracefullShutdown() {
