@@ -34,6 +34,7 @@ func (pst *HttpServer) Default() {
 	pst.router = httpServerWrapper()
 	pst.router.Use(GinLogger(pst.logger))
 	pst.router.SetTrustedProxies(nil)
+	pst.router.Use(gin.Recovery())
 }
 
 func (hs HttpServer) RegistreRoute(method string, path string, handlers ...gin.HandlerFunc) error {
