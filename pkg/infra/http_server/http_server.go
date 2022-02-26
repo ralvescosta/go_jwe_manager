@@ -2,13 +2,13 @@ package http_server
 
 import (
 	"context"
-	"jwemanager/pkg/app/errors"
-	"jwemanager/pkg/app/interfaces"
+	"fmt"
 	"net/http"
+	"os"
 	"time"
 
-	"fmt"
-	"os"
+	"jwemanager/pkg/app/errors"
+	"jwemanager/pkg/app/interfaces"
 
 	"github.com/gin-gonic/gin"
 )

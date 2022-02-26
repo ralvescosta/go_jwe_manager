@@ -2,10 +2,11 @@ package usecases
 
 import (
 	"context"
+	"time"
+
 	"jwemanager/pkg/app/interfaces"
 	"jwemanager/pkg/domain/usecases"
 	valueObjects "jwemanager/pkg/domain/value_objects"
-	"time"
 )
 
 type createKeyUseCase struct {

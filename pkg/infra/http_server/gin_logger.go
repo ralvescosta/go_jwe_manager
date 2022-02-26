@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"jwemanager/pkg/app/interfaces"
 	"net/http"
 	"strings"
 	"time"
+
+	"jwemanager/pkg/app/interfaces"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap/zapcore"

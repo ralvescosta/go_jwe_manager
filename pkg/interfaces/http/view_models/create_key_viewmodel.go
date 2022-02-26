@@ -3,8 +3,9 @@ package viewmodels
 import (
 	"crypto/x509"
 	"encoding/pem"
-	valueObjects "jwemanager/pkg/domain/value_objects"
 	"time"
+
+	valueObjects "jwemanager/pkg/domain/value_objects"
 )
 
 type CreateKeyViewModel struct {

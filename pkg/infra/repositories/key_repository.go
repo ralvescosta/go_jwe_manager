@@ -3,11 +3,12 @@ package repositories
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"jwemanager/pkg/app/errors"
 	"jwemanager/pkg/app/interfaces"
 	valueObjects "jwemanager/pkg/domain/value_objects"
 	"jwemanager/pkg/infra/database/models"
-	"time"
 
 	"github.com/go-redis/redis/v8"
 )

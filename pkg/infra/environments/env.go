@@ -2,9 +2,10 @@ package environments
 
 import (
 	"fmt"
+	"os"
+
 	"jwemanager/pkg/app/errors"
 	"jwemanager/pkg/app/interfaces"
-	"os"
 
 	"github.com/ralvescosta/dotenv"
 )

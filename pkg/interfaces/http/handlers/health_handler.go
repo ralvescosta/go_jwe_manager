@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"context"
+	"net/http"
+
 	"jwemanager/pkg/app/interfaces"
 	httpServer "jwemanager/pkg/infra/http_server"
 	"jwemanager/pkg/interfaces/http/factories"
 	vm "jwemanager/pkg/interfaces/http/view_models"
-	"net/http"
 
 	"github.com/go-redis/redis/v8"
 )
