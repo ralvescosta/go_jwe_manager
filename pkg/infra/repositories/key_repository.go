@@ -19,8 +19,9 @@ type keyRepository struct {
 	rdb     *redis.Client
 }
 
-func (pst keyRepository) CreateKey(ctx context.Context, key valueObjects.Key) (valueObjects.Key, error) {
+func (pst keyRepository) CreateKey(ctx context.Context, key valueObjects.Key, timeToExpiration int) (valueObjects.Key, error) {
 	key.ID = pst.guidGen.V4()
+	key.ExpiredAt = time.Now().Add(time.Duration(timeToExpiration) * time.Hour)
 	key.CreatedAt = time.Now()
 
 	if err := pst.rdb.Set(ctx, getRedisKeyByKey(key), models.ToKeyModel(key), 0).Err(); err != nil {

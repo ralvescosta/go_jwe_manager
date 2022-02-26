@@ -12,8 +12,8 @@ type KeyRepositorySpy struct {
 	mock.Mock
 }
 
-func (pst KeyRepositorySpy) CreateKey(ctx context.Context, key valueObjects.Key) (valueObjects.Key, error) {
-	args := pst.Called(ctx, key)
+func (pst KeyRepositorySpy) CreateKey(ctx context.Context, key valueObjects.Key, timeToExpiration int) (valueObjects.Key, error) {
+	args := pst.Called(ctx, key, timeToExpiration)
 
 	return args.Get(0).(valueObjects.Key), args.Error(1)
 }

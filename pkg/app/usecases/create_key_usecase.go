@@ -2,7 +2,6 @@ package usecases
 
 import (
 	"context"
-	"time"
 
 	"jwemanager/pkg/app/interfaces"
 	"jwemanager/pkg/domain/usecases"
@@ -16,8 +15,7 @@ type createKeyUseCase struct {
 	keyGen  interfaces.IKeyGenerator
 }
 
-func (pst createKeyUseCase) Execute(ctx context.Context, key valueObjects.Key) (valueObjects.Key, error) {
-	key.ExpiredAt = time.Now().Add(time.Hour * 720)
+func (pst createKeyUseCase) Execute(ctx context.Context, key valueObjects.Key, timeToExpiration int) (valueObjects.Key, error) {
 	key.KeyID = pst.guidGen.V4()
 
 	rsaKeys, err := pst.keyGen.GenerateKey()
@@ -28,7 +26,7 @@ func (pst createKeyUseCase) Execute(ctx context.Context, key valueObjects.Key) (
 	key.PriKey = rsaKeys
 	key.PubKey = &rsaKeys.PublicKey
 
-	result, err := pst.keyRepo.CreateKey(ctx, key)
+	result, err := pst.keyRepo.CreateKey(ctx, key, timeToExpiration)
 	if err != nil {
 		return valueObjects.Key{}, err
 	}

@@ -9,7 +9,8 @@ import (
 )
 
 type CreateKeyViewModel struct {
-	UserID string `json:"user_id" validate:"required,uuid4"`
+	UserID           string `json:"user_id" validate:"required,uuid4"`
+	TimeToExpiration int    `json:"time_to_expiration"`
 }
 
 type ResultKeyViewModel struct {

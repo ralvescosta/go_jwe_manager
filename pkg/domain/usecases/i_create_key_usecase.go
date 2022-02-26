@@ -7,5 +7,5 @@ import (
 )
 
 type ICreateKeyUseCase interface {
-	Execute(ctx context.Context, key valueObjects.Key) (valueObjects.Key, error)
+	Execute(ctx context.Context, key valueObjects.Key, timeToExpiration int) (valueObjects.Key, error)
 }
