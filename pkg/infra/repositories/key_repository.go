@@ -16,7 +16,7 @@ import (
 type keyRepository struct {
 	logger  interfaces.ILogger
 	guidGen interfaces.IGuidGenerator
-	rdb     *redis.Client
+	rdb     redis.Cmdable
 }
 
 func (pst keyRepository) CreateKey(ctx context.Context, key valueObjects.Key, timeToExpiration int) (valueObjects.Key, error) {
@@ -54,6 +54,6 @@ func (pst keyRepository) GetKeyByID(ctx context.Context, userID, keyID string) (
 	return vo, nil
 }
 
-func NewKeyRepository(logger interfaces.ILogger, guidGen interfaces.IGuidGenerator, rdb *redis.Client) interfaces.IKeyRepository {
+func NewKeyRepository(logger interfaces.ILogger, guidGen interfaces.IGuidGenerator, rdb redis.Cmdable) interfaces.IKeyRepository {
 	return keyRepository{logger, guidGen, rdb}
 }
