@@ -28,7 +28,10 @@ type webApiContainer struct {
 func NewContainer(env interfaces.IEnvironments) (webApiContainer, error) {
 	var shutdown = make(chan bool)
 
-	logger := logger.NewLogger()
+	logger, err := logger.NewLogger()
+	if err != nil {
+		return webApiContainer{}, err
+	}
 	httpServer := httpServer.NewHttpServer(env, logger, shutdown)
 
 	rdb, err := database.Connection(logger, shutdown)

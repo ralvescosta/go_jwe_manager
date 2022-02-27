@@ -9,25 +9,20 @@ import (
 	"jwemanager/pkg/app/interfaces"
 )
 
-func NewLogger() interfaces.ILogger {
+func NewLogger() (interfaces.ILogger, error) {
 	goEnv := os.Getenv("GO_ENV")
 
 	zapLogLevel := getLogLevel()
 
-	var zapInstance *zap.Logger
-	switch goEnv {
-	case "production", "staging":
-		zapInstance, _ = zap.NewProduction(zap.IncreaseLevel(zapLogLevel), zap.AddStacktrace(zap.ErrorLevel))
-	case "development", "test":
-		config := zap.NewDevelopmentConfig()
-		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-		config.Level.Enabled(zapLogLevel)
-		zapInstance, _ = config.Build()
-	default:
-		break
+	if goEnv == "production" || goEnv == "staging" {
+		return zap.NewProduction(zap.IncreaseLevel(zapLogLevel), zap.AddStacktrace(zap.ErrorLevel))
 	}
 
-	return zapInstance
+	config := zap.NewDevelopmentConfig()
+	config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	config.Level.Enabled(zapLogLevel)
+
+	return config.Build()
 }
 
 func getLogLevel() zapcore.Level {
