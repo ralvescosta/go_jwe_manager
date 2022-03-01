@@ -33,10 +33,10 @@ jobs:
       - store_test_results:
           path: /tmp/test-reports
       - run:
-        command: |
-          go test -coverprofile=c.out
-          go tool cover -html=c.out -o coverage.html
-          mv coverage.html /tmp/artifacts
+          command: |
+            go test -coverprofile=c.out
+            go tool cover -html=c.out -o coverage.html
+            mv coverage.html /tmp/artifacts
       - store_artifacts:
           path: /tmp/artifacts
 
