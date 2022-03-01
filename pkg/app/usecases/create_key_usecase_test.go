@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"jwemanager/pkg/app/errors"
 	"jwemanager/pkg/domain/usecases"
 	valueObjects "jwemanager/pkg/domain/value_objects"
 	guidGenerator "jwemanager/pkg/infra/guid_generator"
@@ -29,6 +30,38 @@ func Test_CreateKeyUseCase(t *testing.T) {
 		_, err := sut.useCase.Execute(sut.ctx, sut.keyMocked, timeToExpiration)
 
 		assert.NoError(t, err)
+		sut.guidGenerator.AssertExpectations(t)
+		sut.keyGenerator.AssertExpectations(t)
+		sut.repository.AssertExpectations(t)
+	})
+
+	t.Run("should return error if keyGenerator return error", func(t *testing.T) {
+		sut := makeCreateKeySut()
+
+		timeToExpiration := 0
+
+		sut.guidGenerator.On("V4").Return("some_guid")
+		sut.keyGenerator.On("GenerateKey").Return(sut.privateKeyMocked, errors.NewInternalError("some error"))
+
+		_, err := sut.useCase.Execute(sut.ctx, sut.keyMocked, timeToExpiration)
+
+		assert.Error(t, err)
+		sut.guidGenerator.AssertExpectations(t)
+		sut.keyGenerator.AssertExpectations(t)
+	})
+
+	t.Run("should return error if repository return error", func(t *testing.T) {
+		sut := makeCreateKeySut()
+
+		timeToExpiration := 0
+
+		sut.guidGenerator.On("V4").Return("some_guid")
+		sut.keyGenerator.On("GenerateKey").Return(sut.privateKeyMocked, nil)
+		sut.repository.On("CreateKey", sut.ctx, sut.keyMocked, timeToExpiration).Return(sut.keyMocked, errors.NewInternalError("some error"))
+
+		_, err := sut.useCase.Execute(sut.ctx, sut.keyMocked, timeToExpiration)
+
+		assert.Error(t, err)
 		sut.guidGenerator.AssertExpectations(t)
 		sut.keyGenerator.AssertExpectations(t)
 		sut.repository.AssertExpectations(t)
