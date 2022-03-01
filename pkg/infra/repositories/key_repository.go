@@ -19,10 +19,12 @@ type keyRepository struct {
 	rdb     redis.Cmdable
 }
 
+var now = time.Now
+
 func (pst keyRepository) CreateKey(ctx context.Context, key valueObjects.Key, timeToExpiration int) (valueObjects.Key, error) {
 	key.ID = pst.guidGen.V4()
-	key.ExpiredAt = time.Now().Add(time.Duration(timeToExpiration) * time.Hour)
-	key.CreatedAt = time.Now()
+	key.ExpiredAt = now().Add(time.Duration(timeToExpiration) * time.Hour)
+	key.CreatedAt = now()
 
 	if err := pst.rdb.Set(ctx, getRedisKeyByKey(key), models.ToKeyModel(key), 0).Err(); err != nil {
 		pst.logger.Error(fmt.Sprintf("[KeyRepository::CreateKey] - Error: %s", err.Error()))
