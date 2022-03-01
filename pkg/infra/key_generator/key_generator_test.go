@@ -4,9 +4,10 @@ import (
 	"crypto/rsa"
 	"errors"
 	"io"
+	"testing"
+
 	"jwemanager/pkg/app/interfaces"
 	"jwemanager/pkg/infra/logger"
-	"testing"
 
 	"github.com/stretchr/testify/assert"
 )

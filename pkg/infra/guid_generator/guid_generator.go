@@ -8,8 +8,10 @@ import (
 
 type guidGenerator struct{}
 
+var NewUUID = uuid.New
+
 func (guidGenerator) V4() string {
-	return uuid.New().String()
+	return NewUUID().String()
 }
 
 func NewGuidGenerator() interfaces.IGuidGenerator {
