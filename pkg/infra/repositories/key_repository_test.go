@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/rsa"
+	"encoding/json"
 	"errors"
 	"testing"
 	"time"
@@ -56,6 +57,88 @@ func Test_KeyRepository_CreateKey(t *testing.T) {
 		assert.Error(t, err)
 		assert.NotNil(t, result)
 		sut.guidGen.AssertExpectations(t)
+		sut.redisClient.AssertExpectations(t)
+	})
+}
+
+func Test_KeyRepository_GetById(t *testing.T) {
+	t.Run("should GetKeyByID execute correctly", func(t *testing.T) {
+		sut := makeKeyRepositorySut()
+
+		marshal, _ := json.Marshal(models.ToKeyModel(sut.keyMocked))
+		strCmd := redis.NewStringCmd(sut.ctx)
+		strCmd.SetVal(string(marshal))
+
+		sut.redisClient.On(
+			"Get",
+			sut.ctx,
+			getRedisKeyByIDs(sut.keyMocked.UserID, sut.keyMocked.KeyID),
+		).Return(strCmd)
+
+		result, err := sut.repo.GetKeyByID(sut.ctx, sut.keyMocked.UserID, sut.keyMocked.KeyID)
+
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		sut.redisClient.AssertExpectations(t)
+	})
+
+	t.Run("should GetKeyByID return error if some error occur in redis", func(t *testing.T) {
+		sut := makeKeyRepositorySut()
+
+		strCmd := redis.NewStringCmd(sut.ctx)
+		strCmd.SetErr(errors.New(""))
+
+		sut.redisClient.On(
+			"Get",
+			sut.ctx,
+			getRedisKeyByIDs(sut.keyMocked.UserID, sut.keyMocked.KeyID),
+		).Return(strCmd)
+
+		result, err := sut.repo.GetKeyByID(sut.ctx, sut.keyMocked.UserID, sut.keyMocked.KeyID)
+
+		assert.Error(t, err)
+		assert.NotNil(t, result)
+		sut.redisClient.AssertExpectations(t)
+	})
+
+	t.Run("should GetKeyByID return error if the value received from redis is invalid", func(t *testing.T) {
+		sut := makeKeyRepositorySut()
+
+		strCmd := redis.NewStringCmd(sut.ctx)
+		strCmd.SetVal("")
+
+		sut.redisClient.On(
+			"Get",
+			sut.ctx,
+			getRedisKeyByIDs(sut.keyMocked.UserID, sut.keyMocked.KeyID),
+		).Return(strCmd)
+
+		result, err := sut.repo.GetKeyByID(sut.ctx, sut.keyMocked.UserID, sut.keyMocked.KeyID)
+
+		assert.Error(t, err)
+		assert.NotNil(t, result)
+		sut.redisClient.AssertExpectations(t)
+	})
+
+	t.Run("should GetKeyByID return error if the value received from redis do not have rsa keys ", func(t *testing.T) {
+		sut := makeKeyRepositorySut()
+
+		sut.keyMocked.PriKey = nil
+		sut.keyMocked.PubKey = nil
+		marshal, _ := json.Marshal(sut.keyMocked)
+		strCmd := redis.NewStringCmd(sut.ctx)
+		strCmd.SetVal(string(marshal))
+
+		sut.redisClient.On(
+			"Get",
+			sut.ctx,
+			getRedisKeyByIDs(sut.keyMocked.UserID, sut.keyMocked.KeyID),
+		).Return(strCmd)
+
+		result, err := sut.repo.GetKeyByID(sut.ctx, sut.keyMocked.UserID, sut.keyMocked.KeyID)
+
+		assert.Error(t, err)
+		assert.NotNil(t, result)
 		sut.redisClient.AssertExpectations(t)
 	})
 }
