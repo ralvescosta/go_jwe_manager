@@ -32,13 +32,11 @@ jobs:
             gotestsum --junitfile /tmp/test-reports/unit-tests.xml
       - store_test_results:
           path: /tmp/test-reports
-
-       - run:
-          name: Coverage
-          command: |
-            go test -coverprofile=c.out
-            go tool cover -html=c.out -o coverage.html
-            mv coverage.html /tmp/artifacts
+      - run:
+        command: |
+          go test -coverprofile=c.out
+          go tool cover -html=c.out -o coverage.html
+          mv coverage.html /tmp/artifacts
       - store_artifacts:
           path: /tmp/artifacts
 
