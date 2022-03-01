@@ -13,9 +13,11 @@ type keyGenerator struct {
 	logger interfaces.ILogger
 }
 
+var genRSAKey = rsa.GenerateKey
+
 // Create RSA key
 func (pst keyGenerator) GenerateKey() (*rsa.PrivateKey, error) {
-	priv, err := rsa.GenerateKey(rand.Reader, 2048)
+	priv, err := genRSAKey(rand.Reader, 2048)
 	if err != nil {
 		pst.logger.Error(fmt.Sprintf("[KeyGenerator::GenerateKey] - Error: %s", err.Error()))
 		return nil, errors.NewInternalError(err.Error())
