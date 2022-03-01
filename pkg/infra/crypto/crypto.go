@@ -16,6 +16,9 @@ type crypto struct {
 	logger interfaces.ILogger
 }
 
+var encrypt = jwe.Encrypt
+var decrypt = jwe.Decrypt
+
 func (pst crypto) Encrypt(pubKey *rsa.PublicKey, data map[string]interface{}) ([]byte, error) {
 	dataToByte, err := json.Marshal(data)
 	if err != nil {
@@ -23,7 +26,7 @@ func (pst crypto) Encrypt(pubKey *rsa.PublicKey, data map[string]interface{}) ([
 		return nil, errors.NewInternalError(err.Error())
 	}
 
-	encrypted, err := jwe.Encrypt(dataToByte, jwa.RSA_OAEP_256, pubKey, jwa.A256CBC_HS512, jwa.NoCompress)
+	encrypted, err := encrypt(dataToByte, jwa.RSA_OAEP_256, pubKey, jwa.A256CBC_HS512, jwa.NoCompress)
 	if err != nil {
 		pst.logger.Error(fmt.Sprintf("[Crypto::Encrypt] JWE Encrypt Error: %s", err.Error()))
 		return nil, errors.NewInternalError(err.Error())
@@ -33,7 +36,7 @@ func (pst crypto) Encrypt(pubKey *rsa.PublicKey, data map[string]interface{}) ([
 }
 
 func (pst crypto) Decrypt(privKey *rsa.PrivateKey, data []byte) (map[string]interface{}, error) {
-	data, err := jwe.Decrypt(data, jwa.RSA_OAEP_256, privKey)
+	data, err := decrypt(data, jwa.RSA_OAEP_256, privKey)
 	if err != nil {
 		pst.logger.Error(fmt.Sprintf("[Crypto::Encrypt] JWE Decrypt Error: %s", err.Error()))
 		return nil, errors.NewInternalError(err.Error())
