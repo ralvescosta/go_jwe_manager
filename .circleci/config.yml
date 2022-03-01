@@ -28,11 +28,18 @@ jobs:
       - run:
           name: Run tests
           command: |
-            mkdir -p /tmp/artifacts
+            mkdir -p /tmp/test-reports
+            gotestsum --junitfile /tmp/test-reports/unit-tests.xml
+      - store_test_results:
+          path: /tmp/test-reports
+
+       - run:
+          name: Coverage
+          command: |
             go test -coverprofile=c.out
             go tool cover -html=c.out -o coverage.html
-            mv coverage.html /tmp/artifactsgotestsum --junitfile /tmp/test-reports/unit-tests.xml
-      - store_test_results:
+            mv coverage.html /tmp/artifacts
+      - store_artifacts:
           path: /tmp/artifacts
 
 # Invoke jobs via workflows
