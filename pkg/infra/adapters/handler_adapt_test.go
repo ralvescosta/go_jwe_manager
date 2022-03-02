@@ -9,12 +9,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"jwemanager/pkg/app/interfaces"
 	httpServer "jwemanager/pkg/infra/http_server"
 	"jwemanager/pkg/infra/logger"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
 )
 
 func Test_HandlerAdapter(t *testing.T) {
@@ -32,16 +32,18 @@ func Test_HandlerAdapter(t *testing.T) {
 		readAllBody = func(r io.Reader) ([]byte, error) {
 			return nil, errors.New("Error")
 		}
+		sut.logger.On("Error", "[HandlerAdapt] error while read request bytes", []zap.Field(nil))
 
 		sut.adapt(sut.ctx)
 
 		assert.Equal(t, 0, *sut.handlerCalledTimes)
+		sut.logger.AssertExpectations(t)
 	})
 }
 
 type sutReturn struct {
 	adapt              gin.HandlerFunc
-	logger             interfaces.ILogger
+	logger             *logger.LoggerSpy
 	handlerCalledTimes *int
 	handlerSpy         func(httpRequest httpServer.HttpRequest) httpServer.HttpResponse
 	request            *http.Request

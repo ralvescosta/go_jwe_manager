@@ -17,7 +17,7 @@ func HandlerAdapt(handler func(httpRequest httpServer.HttpRequest) httpServer.Ht
 	return func(ctx *gin.Context) {
 		body, err := readAllBody(ctx.Request.Body)
 		if err != nil {
-			logger.Error("error while read request bytes")
+			logger.Error("[HandlerAdapt] error while read request bytes")
 			ctx.JSON(http.StatusInternalServerError, gin.H{})
 			return
 		}
