@@ -49,5 +49,12 @@ func Test_Logger(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.IsType(t, &zap.Logger{}, logger)
+
+		os.Setenv("LOG_LEVEL", "wrong log level")
+
+		logger, err = NewLogger()
+
+		assert.NoError(t, err)
+		assert.IsType(t, &zap.Logger{}, logger)
 	})
 }

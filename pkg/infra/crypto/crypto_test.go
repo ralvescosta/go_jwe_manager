@@ -5,13 +5,17 @@ import (
 	"crypto/rsa"
 	"encoding/json"
 	"errors"
+	"testing"
+
 	"jwemanager/pkg/app/interfaces"
 	"jwemanager/pkg/infra/logger"
-	"testing"
+
+	appErrors "jwemanager/pkg/app/errors"
 
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jwe"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
 )
 
 func Test_Encrypt(t *testing.T) {
@@ -26,24 +30,31 @@ func Test_Encrypt(t *testing.T) {
 
 	t.Run("should return error if some error occur in marshal", func(t *testing.T) {
 		sut := makeCryptoSutRtn()
-
+		encrypt = jwe.Encrypt
 		marshal = func(v interface{}) ([]byte, error) {
 			return nil, errors.New("some error")
 		}
+		sut.logger.On("Error", "[Crypto::Encrypt] Marshal Error: some error", []zap.Field(nil))
+
 		_, err := sut.crypto.Encrypt(&sut.privateKeyMocked.PublicKey, nil)
 
 		assert.Error(t, err)
+		sut.logger.AssertExpectations(t)
 	})
 
 	t.Run("should return error if some error occur in encrypt", func(t *testing.T) {
 		sut := makeCryptoSutRtn()
-
+		marshal = json.Marshal
 		encrypt = func(payload []byte, keyalg jwa.KeyEncryptionAlgorithm, key interface{}, contentalg jwa.ContentEncryptionAlgorithm, compressalg jwa.CompressionAlgorithm, options ...jwe.EncryptOption) ([]byte, error) {
 			return nil, errors.New("some error")
 		}
+		sut.logger.On("Error", "[Crypto::Encrypt] JWE Encrypt Error: some error", []zap.Field(nil))
+
 		_, err := sut.crypto.Encrypt(&sut.privateKeyMocked.PublicKey, nil)
 
 		assert.Error(t, err)
+		assert.IsType(t, appErrors.InternalError{}, err)
+		sut.logger.AssertExpectations(t)
 	})
 }
 
@@ -68,9 +79,12 @@ func Test_Decrypt(t *testing.T) {
 		decrypt = func(buf []byte, alg jwa.KeyEncryptionAlgorithm, key interface{}, options ...jwe.DecryptOption) ([]byte, error) {
 			return nil, errors.New("some error")
 		}
+		sut.logger.On("Error", "[Crypto::Encrypt] JWE Decrypt Error: some error", []zap.Field(nil))
+
 		_, err := sut.crypto.Decrypt(sut.privateKeyMocked, encrypted)
 
 		assert.Error(t, err)
+		sut.logger.AssertExpectations(t)
 	})
 
 	t.Run("should error if some error occur in unmarshal", func(t *testing.T) {
@@ -80,9 +94,12 @@ func Test_Decrypt(t *testing.T) {
 		decrypt = func(buf []byte, alg jwa.KeyEncryptionAlgorithm, key interface{}, options ...jwe.DecryptOption) ([]byte, error) {
 			return nil, nil
 		}
+		sut.logger.On("Error", "[Crypto::Encrypt] Decrypted Data Unmarshaler Error: unexpected end of JSON input", []zap.Field(nil))
+
 		_, err := sut.crypto.Decrypt(sut.privateKeyMocked, encrypted)
 
 		assert.Error(t, err)
+		sut.logger.AssertExpectations(t)
 	})
 }
 

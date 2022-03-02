@@ -2,50 +2,62 @@ package adapters
 
 import (
 	"bytes"
+	"errors"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"jwemanager/pkg/app/interfaces"
 	httpServer "jwemanager/pkg/infra/http_server"
 	"jwemanager/pkg/infra/logger"
 
 	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
 )
 
-func Test_Should_Exec_Handler_Successfully(t *testing.T) {
-	sut := makeSut()
+func Test_HandlerAdapter(t *testing.T) {
+	t.Run("should execute correctly", func(t *testing.T) {
+		sut := makeSut()
 
-	sut.adapt(sut.ctx)
+		sut.adapt(sut.ctx)
 
-	if *sut.handlerCalledTimes != 1 {
-		t.Error("should called handler once")
-	}
+		assert.Equal(t, 1, *sut.handlerCalledTimes)
+	})
+
+	t.Run("should return error if some occur when read body", func(t *testing.T) {
+		sut := makeSut()
+
+		readAllBody = func(r io.Reader) ([]byte, error) {
+			return nil, errors.New("Error")
+		}
+		sut.logger.On("Error", "[HandlerAdapt] error while read request bytes", []zap.Field(nil))
+
+		sut.adapt(sut.ctx)
+
+		assert.Equal(t, 0, *sut.handlerCalledTimes)
+		sut.logger.AssertExpectations(t)
+	})
 }
 
-// func Test_Should_Exec_Handler_With_Body_Error(t *testing.T) {
-// 	sut := makeSut()
-
-// 	readAllBody = func(r io.Reader) ([]byte, error) {
-// 		return []byte{}, errors.New("Error")
-// 	}
-
-// 	sut.adapt(sut.ctx)
-
-// 	if *sut.handlerCalledTimes != 0 {
-// 		t.Error("Shouldn't call handler when body is unformatted")
-// 	}
-// }
+type sutReturn struct {
+	adapt              gin.HandlerFunc
+	logger             *logger.LoggerSpy
+	handlerCalledTimes *int
+	handlerSpy         func(httpRequest httpServer.HttpRequest) httpServer.HttpResponse
+	request            *http.Request
+	ctx                *gin.Context
+}
 
 func makeSut() sutReturn {
 	handlerCalledTimes := 0
-	handlerMock := func(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
+	handlerSpy := func(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
 		handlerCalledTimes++
 		return httpServer.HttpResponse{}
 	}
 
-	loggerMock := logger.NewLoggerSpy()
+	logger := logger.NewLoggerSpy()
 
 	req := &http.Request{
 		Body: ioutil.NopCloser(bytes.NewBuffer([]byte(nil))),
@@ -54,27 +66,18 @@ func makeSut() sutReturn {
 		},
 	}
 
-	sut := HandlerAdapt(handlerMock, loggerMock)
+	sut := HandlerAdapt(handlerSpy, logger)
 
 	contextMock, _ := gin.CreateTestContext(httptest.NewRecorder())
 	contextMock.Params = []gin.Param{{Key: "key", Value: "value"}}
 	contextMock.Request = req
 
 	return sutReturn{
-		handlerMock:        handlerMock,
+		handlerSpy:         handlerSpy,
 		handlerCalledTimes: &handlerCalledTimes,
-		loggerMock:         loggerMock,
+		logger:             logger,
 		request:            req,
 		adapt:              sut,
 		ctx:                contextMock,
 	}
-}
-
-type sutReturn struct {
-	adapt              gin.HandlerFunc
-	loggerMock         interfaces.ILogger
-	handlerCalledTimes *int
-	handlerMock        func(httpRequest httpServer.HttpRequest) httpServer.HttpResponse
-	request            *http.Request
-	ctx                *gin.Context
 }

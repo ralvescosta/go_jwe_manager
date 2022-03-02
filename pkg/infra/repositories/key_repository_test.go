@@ -19,6 +19,7 @@ import (
 	"github.com/elliotchance/redismock/v8"
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
 )
 
 func Test_KeyRepository_CreateKey(t *testing.T) {
@@ -51,6 +52,7 @@ func Test_KeyRepository_CreateKey(t *testing.T) {
 			models.ToKeyModel(sut.keyMocked),
 			time.Duration(0),
 		).Return(redis.NewStatusResult("", errors.New("some error")))
+		sut.logger.On("Error", "[KeyRepository::CreateKey] - Error: some error", []zap.Field(nil))
 
 		result, err := sut.repo.CreateKey(sut.ctx, sut.keyMocked, 0)
 
@@ -58,6 +60,7 @@ func Test_KeyRepository_CreateKey(t *testing.T) {
 		assert.NotNil(t, result)
 		sut.guidGen.AssertExpectations(t)
 		sut.redisClient.AssertExpectations(t)
+		sut.logger.AssertExpectations(t)
 	})
 }
 
@@ -80,6 +83,7 @@ func Test_KeyRepository_GetById(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		sut.redisClient.AssertExpectations(t)
+		sut.logger.AssertExpectations(t)
 	})
 
 	t.Run("should GetKeyByID return error if some error occur in redis", func(t *testing.T) {
@@ -93,12 +97,14 @@ func Test_KeyRepository_GetById(t *testing.T) {
 			sut.ctx,
 			getRedisKeyByIDs(sut.keyMocked.UserID, sut.keyMocked.KeyID),
 		).Return(strCmd)
+		sut.logger.On("Error", "[KeyRepository::GetKeyByID] - Error: ", []zap.Field(nil))
 
 		result, err := sut.repo.GetKeyByID(sut.ctx, sut.keyMocked.UserID, sut.keyMocked.KeyID)
 
 		assert.Error(t, err)
 		assert.NotNil(t, result)
 		sut.redisClient.AssertExpectations(t)
+		sut.logger.AssertExpectations(t)
 	})
 
 	t.Run("should GetKeyByID return error if the value received from redis is invalid", func(t *testing.T) {
@@ -112,15 +118,17 @@ func Test_KeyRepository_GetById(t *testing.T) {
 			sut.ctx,
 			getRedisKeyByIDs(sut.keyMocked.UserID, sut.keyMocked.KeyID),
 		).Return(strCmd)
+		sut.logger.On("Error", "[KeyRepository::GetKeyByID] - Error: unexpected end of JSON input", []zap.Field(nil))
 
 		result, err := sut.repo.GetKeyByID(sut.ctx, sut.keyMocked.UserID, sut.keyMocked.KeyID)
 
 		assert.Error(t, err)
 		assert.NotNil(t, result)
 		sut.redisClient.AssertExpectations(t)
+		sut.logger.AssertExpectations(t)
 	})
 
-	t.Run("should GetKeyByID return error if the value received from redis do not have rsa keys ", func(t *testing.T) {
+	t.Run("should GetKeyByID return error if the value received from redis do not have rsa keys", func(t *testing.T) {
 		sut := makeKeyRepositorySut()
 
 		sut.keyMocked.PriKey = nil
@@ -134,12 +142,14 @@ func Test_KeyRepository_GetById(t *testing.T) {
 			sut.ctx,
 			getRedisKeyByIDs(sut.keyMocked.UserID, sut.keyMocked.KeyID),
 		).Return(strCmd)
+		sut.logger.On("Error", "[KeyRepository::GetKeyByID] - Error: asn1: syntax error: sequence truncated", []zap.Field(nil))
 
 		result, err := sut.repo.GetKeyByID(sut.ctx, sut.keyMocked.UserID, sut.keyMocked.KeyID)
 
 		assert.Error(t, err)
 		assert.NotNil(t, result)
 		sut.redisClient.AssertExpectations(t)
+		sut.logger.AssertExpectations(t)
 	})
 }
 

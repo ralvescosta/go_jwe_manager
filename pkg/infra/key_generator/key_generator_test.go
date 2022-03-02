@@ -10,6 +10,7 @@ import (
 	"jwemanager/pkg/infra/logger"
 
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
 )
 
 func Test_KeyGen(t *testing.T) {
@@ -32,11 +33,13 @@ func Test_KeyGen(t *testing.T) {
 		genRSAKey = func(random io.Reader, bits int) (*rsa.PrivateKey, error) {
 			return nil, errors.New("some error")
 		}
+		sut.logger.On("Error", "[KeyGenerator::GenerateKey] - Error: some error", []zap.Field(nil))
 
 		result, err := sut.keyGen.GenerateKey()
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
+		sut.logger.AssertExpectations(t)
 	})
 }
 

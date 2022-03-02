@@ -29,6 +29,8 @@ func (pst crypto) Encrypt(pubKey *rsa.PublicKey, data map[string]interface{}) ([
 
 	encrypted, err := encrypt(dataToByte, jwa.RSA_OAEP_256, pubKey, jwa.A256CBC_HS512, jwa.NoCompress)
 	if err != nil {
+		a := fmt.Sprintf("[Crypto::Encrypt] JWE Encrypt Error: %s", err.Error())
+		fmt.Print(a)
 		pst.logger.Error(fmt.Sprintf("[Crypto::Encrypt] JWE Encrypt Error: %s", err.Error()))
 		return nil, errors.NewInternalError(err.Error())
 	}

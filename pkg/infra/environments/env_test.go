@@ -1,6 +1,7 @@
 package environments
 
 import (
+	"errors"
 	"os"
 	"testing"
 
@@ -19,12 +20,8 @@ func Test_Configure(t *testing.T) {
 		env := NewEnvironment()
 		err := env.Configure()
 
-		if err != nil {
-			t.Error("dotenv need to call only dotEnvConfig function")
-		}
-		if envFile != ".env.development" {
-			t.Error("dotenv need to call only dotEnvConfig function")
-		}
+		assert.NoError(t, err)
+		assert.Equal(t, ".env.development", envFile)
 	})
 
 	t.Run("should configure env using the GO_ENV", func(t *testing.T) {
@@ -37,12 +34,19 @@ func Test_Configure(t *testing.T) {
 		env := NewEnvironment()
 		err := env.Configure()
 
-		if err != nil {
-			t.Error("dotenv need to call only dotEnvConfig function")
+		assert.NoError(t, err)
+		assert.Equal(t, ".env.production", envFile)
+	})
+
+	t.Run("should return err if some error occur", func(t *testing.T) {
+		dotEnvConfig = func(arg string) error {
+			return errors.New("some error")
 		}
-		if envFile != ".env.production" {
-			t.Error("dotenv need to call only dotEnvConfig function")
-		}
+
+		env := NewEnvironment()
+		err := env.Configure()
+
+		assert.Error(t, err)
 	})
 }
 
