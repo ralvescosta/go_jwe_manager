@@ -17,10 +17,11 @@ type crypto struct {
 }
 
 var encrypt = jwe.Encrypt
+var marshal = json.Marshal
 var decrypt = jwe.Decrypt
 
 func (pst crypto) Encrypt(pubKey *rsa.PublicKey, data map[string]interface{}) ([]byte, error) {
-	dataToByte, err := json.Marshal(data)
+	dataToByte, err := marshal(data)
 	if err != nil {
 		pst.logger.Error(fmt.Sprintf("[Crypto::Encrypt] Marshal Error: %s", err.Error()))
 		return nil, errors.NewInternalError(err.Error())
