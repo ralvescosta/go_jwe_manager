@@ -3,6 +3,7 @@ package crypto
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"encoding/json"
 	"errors"
 	"jwemanager/pkg/app/interfaces"
 	"jwemanager/pkg/infra/logger"
@@ -49,7 +50,10 @@ func Test_Encrypt(t *testing.T) {
 func Test_Decrypt(t *testing.T) {
 	t.Run("should decrypt correctly", func(t *testing.T) {
 		sut := makeCryptoSutRtn()
+		encrypt = jwe.Encrypt
+		marshal = json.Marshal
 		encrypted, _ := sut.crypto.Encrypt(&sut.privateKeyMocked.PublicKey, sut.dataMocked)
+		decrypt = jwe.Decrypt
 
 		result, err := sut.crypto.Decrypt(sut.privateKeyMocked, encrypted)
 
