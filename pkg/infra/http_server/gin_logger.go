@@ -24,14 +24,16 @@ func (r responseBodyWriter) Write(b []byte) (int, error) {
 	return r.ResponseWriter.Write(b)
 }
 
+var now = time.Now
+
 func GinLogger(logger interfaces.ILogger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		w := &responseBodyWriter{body: &bytes.Buffer{}, ResponseWriter: ctx.Writer}
 		ctx.Writer = w
 
-		startTime := time.Now()
+		startTime := now()
 		ctx.Next()
-		endTime := time.Now()
+		endTime := now()
 
 		latencyTimeInMileseconds := float64(endTime.Sub(startTime).Nanoseconds() / 1000)
 
