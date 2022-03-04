@@ -119,6 +119,8 @@ func Test_Run(t *testing.T) {
 		sut.env.On("PROD_ENV").Return("production")
 		os.Setenv("HOST", "localhost")
 		os.Setenv("PORT", "1111")
+		os.Setenv("TLS_CERT_PATH", "../../../certs/cert.pem")
+		os.Setenv("TLS_KEY_PATH", "../../../certs/key.pem")
 		sut.httpServer.Default()
 		sut.httpServer.Setup()
 		sut.logger.On("Info", "[HttpServer::Run] - Server running at: https://localhost:1111", []zap.Field(nil))
