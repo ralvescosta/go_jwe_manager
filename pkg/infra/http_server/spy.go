@@ -5,25 +5,30 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type HttpServerSpy struct {
+type HTTPServerSpy struct {
 	mock.Mock
 }
 
-func (pst HttpServerSpy) Default() {}
-func (pst HttpServerSpy) RegistreRoute(method string, path string, handlers ...gin.HandlerFunc) error {
+func (pst HTTPServerSpy) Default() {
+
+}
+
+func (pst HTTPServerSpy) RegisterRoute(method string, path string, handlers ...gin.HandlerFunc) error {
 	args := pst.Called(method, path, handlers)
 
 	return args.Error(0)
 }
-func (pst HttpServerSpy) Setup() {
+
+func (pst HTTPServerSpy) Setup() {
 
 }
-func (pst HttpServerSpy) Run() error {
+
+func (pst HTTPServerSpy) Run() error {
 	args := pst.Called()
 
 	return args.Error(0)
 }
 
-func NewHttpServerSpy() *HttpServerSpy {
-	return new(HttpServerSpy)
+func NewHTTPServerSpy() *HTTPServerSpy {
+	return new(HTTPServerSpy)
 }
