@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_ValidateStruct(t *testing.T) {
+func Test_ValidateStructSpy(t *testing.T) {
 	t.Run("execute correctly", func(t *testing.T) {
 		v := NewValidatorSpy()
 
