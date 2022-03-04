@@ -14,6 +14,6 @@ func (pst GuidGeneratorSpy) V4() string {
 	return args.String(0)
 }
 
-func NewGUidGeneratorSpy() *GuidGeneratorSpy {
+func NewGuidGeneratorSpy() *GuidGeneratorSpy {
 	return new(GuidGeneratorSpy)
 }
