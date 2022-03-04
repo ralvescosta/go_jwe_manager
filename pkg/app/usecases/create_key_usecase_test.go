@@ -82,7 +82,7 @@ type createKeySutRtn struct {
 func makeCreateKeySut() createKeySutRtn {
 	logger := logger.NewLoggerSpy()
 	repository := repositories.NewKeyRepositorySpy()
-	guidGenerator := guidGenerator.NewGUidGeneratorSpy()
+	guidGenerator := guidGenerator.NewGuidGeneratorSpy()
 	keyGenerator := keyGenerator.NewKeyGeneratorSpy()
 
 	ctx := context.Background()

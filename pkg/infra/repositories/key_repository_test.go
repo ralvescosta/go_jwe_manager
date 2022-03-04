@@ -167,7 +167,7 @@ type keyRepositorySutRtn struct {
 
 func makeKeyRepositorySut() keyRepositorySutRtn {
 	logger := logger.NewLoggerSpy()
-	guidGen := guidGenerator.NewGUidGeneratorSpy()
+	guidGen := guidGenerator.NewGuidGeneratorSpy()
 
 	miniRedis, _ := miniredis.Run()
 	redisClient := redismock.NewNiceMock(redis.NewClient(&redis.Options{

@@ -2,8 +2,9 @@ package repositories
 
 import (
 	"context"
-	valueObjects "jwemanager/pkg/domain/value_objects"
 	"testing"
+
+	valueObjects "jwemanager/pkg/domain/value_objects"
 
 	"github.com/stretchr/testify/assert"
 )
