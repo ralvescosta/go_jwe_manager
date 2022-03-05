@@ -14,3 +14,11 @@ func Test_NotFoundError(t *testing.T) {
 		assert.IsType(t, NotFoundError{}, err)
 	})
 }
+
+func Test_NotFoundError_Error(t *testing.T) {
+	t.Run("should return error msg", func(t *testing.T) {
+		err := NewNotFoundError("some error")
+
+		assert.Equal(t, "some error", err.Error())
+	})
+}

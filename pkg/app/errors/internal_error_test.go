@@ -14,3 +14,11 @@ func Test_NewInternalError(t *testing.T) {
 		assert.IsType(t, InternalError{}, err)
 	})
 }
+
+func Test_NewInternalError_Error(t *testing.T) {
+	t.Run("should return error msg", func(t *testing.T) {
+		err := NewInternalError("some error")
+
+		assert.Equal(t, "some error", err.Error())
+	})
+}
