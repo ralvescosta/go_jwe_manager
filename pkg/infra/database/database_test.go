@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"jwemanager/pkg/infra/logger"
 	"os"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"github.com/alicebob/miniredis"
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap/zapcore"
 )
 
 func Test_Connection(t *testing.T) {
@@ -30,9 +32,21 @@ func Test_Connection(t *testing.T) {
 		assert.Nil(t, client)
 	})
 
-	t.Run("should return error when convert seconds to pint env", func(t *testing.T) {
+	t.Run("should return error when convert seconds to ping env", func(t *testing.T) {
 		sut := makeDatabaseSut()
 		os.Setenv("REDIS_SECONDS_TO_PING", "")
+		client, err := Connection(sut.logger, sut.shotdown)
+
+		assert.Error(t, err)
+		assert.Nil(t, client)
+	})
+
+	t.Run("should return error when connection fails", func(t *testing.T) {
+		sut := makeDatabaseSut()
+		sut.redis.Close()
+		message := fmt.Sprintf("[Database::Connection] - Redis Connection failure : dial tcp %s: connect: connection refused", sut.redisAddr)
+		sut.logger.On("Error", message, []zapcore.Field(nil))
+
 		client, err := Connection(sut.logger, sut.shotdown)
 
 		assert.Error(t, err)
@@ -41,15 +55,16 @@ func Test_Connection(t *testing.T) {
 }
 
 type databaseSutRtn struct {
-	redis    *miniredis.Miniredis
-	logger   *logger.LoggerSpy
-	shotdown chan bool
+	redis     *miniredis.Miniredis
+	redisAddr string
+	logger    *logger.LoggerSpy
+	shotdown  chan bool
 }
 
 func makeDatabaseSut() databaseSutRtn {
 	miniRedis, _ := miniredis.Run()
-
-	spited := strings.Split(miniRedis.Addr(), ":")
+	redisAddr := miniRedis.Addr()
+	spited := strings.Split(redisAddr, ":")
 	os.Setenv("REDIS_HOST", spited[0])
 	os.Setenv("REDIS_PORT", spited[1])
 	os.Setenv("REDIS_DB", "0")
@@ -59,5 +74,5 @@ func makeDatabaseSut() databaseSutRtn {
 
 	shotdown := make(chan bool)
 
-	return databaseSutRtn{miniRedis, logger, shotdown}
+	return databaseSutRtn{miniRedis, redisAddr, logger, shotdown}
 }
