@@ -10,6 +10,14 @@ import (
 	mErrors "jwemanager/pkg/app/errors"
 )
 
+func Test_New(t *testing.T) {
+	t.Run("should return new instance correctly", func(t *testing.T) {
+		sut := NewHttpResponseFactory()
+
+		assert.IsType(t, HttpResponseFactory{}, sut)
+	})
+}
+
 func Test_Ok(t *testing.T) {
 	t.Run("should return httpStatus 200", func(t *testing.T) {
 		sut := HttpResponseFactory{}
