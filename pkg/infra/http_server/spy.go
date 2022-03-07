@@ -14,7 +14,7 @@ func (pst HTTPServerSpy) Default() {
 }
 
 func (pst HTTPServerSpy) RegisterRoute(method string, path string, handlers ...gin.HandlerFunc) error {
-	args := pst.Called(method, path, handlers)
+	args := pst.Called(method, path)
 
 	return args.Error(0)
 }

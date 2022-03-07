@@ -15,7 +15,7 @@ import (
 
 type IHttpServer interface {
 	Default()
-	RegistreRoute(method string, path string, handlers ...gin.HandlerFunc) error
+	RegisterRoute(method string, path string, handlers ...gin.HandlerFunc) error
 	Setup()
 	Run() error
 }
@@ -38,7 +38,7 @@ func (pst *HttpServer) Default() {
 	pst.router.Use(gin.Recovery())
 }
 
-func (hs HttpServer) RegistreRoute(method string, path string, handlers ...gin.HandlerFunc) error {
+func (hs HttpServer) RegisterRoute(method string, path string, handlers ...gin.HandlerFunc) error {
 	switch method {
 	case "POST":
 		hs.router.POST(path, handlers...)
