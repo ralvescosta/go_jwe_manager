@@ -1,5 +1,6 @@
 # JWE Manager
 
+[![CircleCI](https://circleci.com/gh/ralvescosta/go_jwe_manager/tree/main.svg?style=svg)](https://circleci.com/gh/ralvescosta/go_jwe_manager/tree/main)
 [![codecov](https://codecov.io/gh/ralvescosta/go_jwe_manager/branch/main/graph/badge.svg?token=PCFNRLU9Y3)](https://codecov.io/gh/ralvescosta/go_jwe_manager)
 
 JWE Manager is a HTTP server who expose five main functionalities: 
