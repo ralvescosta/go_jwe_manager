@@ -7,20 +7,20 @@ import (
 	"jwemanager/pkg/interfaces/http/handlers"
 )
 
-type ICryptRoutes interface {
+type ICryptoRoutes interface {
 	Register(httpServer httpServer.IHttpServer)
 }
 
 type cryptRoutes struct {
 	logger   interfaces.ILogger
-	handlers handlers.ICryptHandler
+	handlers handlers.ICryptoHandler
 }
 
 func (pst cryptRoutes) Register(httpServer httpServer.IHttpServer) {
-	httpServer.RegistreRoute("POST", "/api/v1/encrypt", adapters.HandlerAdapt(pst.handlers.Encrypt, pst.logger))
-	httpServer.RegistreRoute("POST", "/api/v1/decrypt", adapters.HandlerAdapt(pst.handlers.Decrypt, pst.logger))
+	httpServer.RegisterRoute("POST", "/api/v1/encrypt", adapters.HandlerAdapt(pst.handlers.Encrypt, pst.logger))
+	httpServer.RegisterRoute("POST", "/api/v1/decrypt", adapters.HandlerAdapt(pst.handlers.Decrypt, pst.logger))
 }
 
-func NewCryptRoutes(logger interfaces.ILogger, handlers handlers.ICryptHandler) ICryptRoutes {
+func NewCryptRoutes(logger interfaces.ILogger, handlers handlers.ICryptoHandler) ICryptoRoutes {
 	return cryptRoutes{logger, handlers}
 }

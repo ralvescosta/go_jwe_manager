@@ -21,7 +21,7 @@ type webApiContainer struct {
 	httpServer httpServer.IHttpServer
 
 	keysRoutes   presenters.IKeysRoutes
-	cryptRoutes  presenters.ICryptRoutes
+	cryptoRoutes presenters.ICryptoRoutes
 	healthRoutes presenters.IHealthRoutes
 }
 
@@ -53,8 +53,8 @@ func NewContainer(env interfaces.IEnvironments) (webApiContainer, error) {
 
 	encryptUseCase := usecases.NewEncryptUseCase(logger, keyRepository, crypto)
 	decryptUseCase := usecases.NewDecryptUseCase(logger, keyRepository, crypto)
-	cryptHandlers := handlers.NewCryptHandler(logger, vValidator, httpResponseFactory, encryptUseCase, decryptUseCase)
-	cryptRoutes := presenters.NewCryptRoutes(logger, cryptHandlers)
+	cryptoHandlers := handlers.NewCryptoHandler(logger, vValidator, httpResponseFactory, encryptUseCase, decryptUseCase)
+	cryptoRoutes := presenters.NewCryptRoutes(logger, cryptoHandlers)
 
 	healthHandlers := handlers.NewHealthHandler(logger, httpResponseFactory, rdb)
 	healthRoutes := presenters.NewHealthRoutes(logger, healthHandlers)
@@ -64,7 +64,7 @@ func NewContainer(env interfaces.IEnvironments) (webApiContainer, error) {
 		httpServer,
 
 		keysRoutes,
-		cryptRoutes,
+		cryptoRoutes,
 		healthRoutes,
 	}, nil
 }

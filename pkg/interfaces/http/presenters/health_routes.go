@@ -17,7 +17,7 @@ type healthRoutes struct {
 }
 
 func (pst healthRoutes) Register(httpServer httpServer.IHttpServer) {
-	httpServer.RegistreRoute("GET", "/api/v1/health", adapters.HandlerAdapt(pst.handlers.Check, pst.logger))
+	httpServer.RegisterRoute("GET", "/api/v1/health", adapters.HandlerAdapt(pst.handlers.Check, pst.logger))
 }
 
 func NewHealthRoutes(logger interfaces.ILogger, healthHandler handlers.IHealthHandler) IHealthRoutes {

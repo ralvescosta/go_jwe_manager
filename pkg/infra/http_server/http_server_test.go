@@ -28,13 +28,13 @@ func Test_NewHttpServer(t *testing.T) {
 	})
 }
 
-func Test_RegistreRoute(t *testing.T) {
+func Test_RegisterRoutes(t *testing.T) {
 	t.Run("should configure a POST route", func(t *testing.T) {
 		sut := makeHTTPServerSutRtn("POST")
 		sut.httpServer.Default()
 
 		sut.spyLogger()
-		sut.httpServer.RegistreRoute("POST", "/api/v1/test", func(ctx *gin.Context) {
+		sut.httpServer.RegisterRoute("POST", "/api/v1/test", func(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, nil)
 		})
 
@@ -48,7 +48,7 @@ func Test_RegistreRoute(t *testing.T) {
 		sut := makeHTTPServerSutRtn("GET")
 		sut.httpServer.Default()
 		sut.spyLogger()
-		sut.httpServer.RegistreRoute("GET", "/api/v1/test", func(ctx *gin.Context) {
+		sut.httpServer.RegisterRoute("GET", "/api/v1/test", func(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, nil)
 		})
 
@@ -62,7 +62,7 @@ func Test_RegistreRoute(t *testing.T) {
 		sut := makeHTTPServerSutRtn("PUT")
 		sut.httpServer.Default()
 		sut.spyLogger()
-		sut.httpServer.RegistreRoute("PUT", "/api/v1/test", func(ctx *gin.Context) {
+		sut.httpServer.RegisterRoute("PUT", "/api/v1/test", func(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, nil)
 		})
 
@@ -76,7 +76,7 @@ func Test_RegistreRoute(t *testing.T) {
 		sut := makeHTTPServerSutRtn("PATCH")
 		sut.httpServer.Default()
 		sut.spyLogger()
-		sut.httpServer.RegistreRoute("PATCH", "/api/v1/test", func(ctx *gin.Context) {
+		sut.httpServer.RegisterRoute("PATCH", "/api/v1/test", func(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, nil)
 		})
 
@@ -90,7 +90,7 @@ func Test_RegistreRoute(t *testing.T) {
 		sut := makeHTTPServerSutRtn("DELETE")
 		sut.httpServer.Default()
 		sut.spyLogger()
-		sut.httpServer.RegistreRoute("DELETE", "/api/v1/test", func(ctx *gin.Context) {
+		sut.httpServer.RegisterRoute("DELETE", "/api/v1/test", func(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, nil)
 		})
 
@@ -104,7 +104,7 @@ func Test_RegistreRoute(t *testing.T) {
 		sut := makeHTTPServerSutRtn("Something")
 		sut.httpServer.Default()
 		sut.spyLogger()
-		err := sut.httpServer.RegistreRoute("Something", "/api/v1/test", func(ctx *gin.Context) {
+		err := sut.httpServer.RegisterRoute("Something", "/api/v1/test", func(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, nil)
 		})
 

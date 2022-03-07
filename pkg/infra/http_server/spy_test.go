@@ -23,7 +23,7 @@ func Test_RegisterRoute(t *testing.T) {
 		path := "/api"
 		handlers := []gin.HandlerFunc{func(ctx *gin.Context) {}}
 
-		sut.On("RegisterRoute", method, path, handlers).Return(nil)
+		sut.On("RegisterRoute", method, path).Return(nil)
 
 		error := sut.RegisterRoute(method, path, handlers...)
 

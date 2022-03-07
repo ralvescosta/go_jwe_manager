@@ -7,24 +7,24 @@ import (
 )
 
 //
-type CryptHandlersSpy struct {
+type CryptoHandlersSpy struct {
 	mock.Mock
 }
 
-func (pst CryptHandlersSpy) Encrypt(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
+func (pst CryptoHandlersSpy) Encrypt(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
 	args := pst.Called(httpRequest)
 
 	return args.Get(0).(httpServer.HttpResponse)
 }
 
-func (pst CryptHandlersSpy) Decrypt(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
+func (pst CryptoHandlersSpy) Decrypt(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
 	args := pst.Called(httpRequest)
 
 	return args.Get(0).(httpServer.HttpResponse)
 }
 
-func NewCryptoHandlersSpy() *CryptHandlersSpy {
-	return new(CryptHandlersSpy)
+func NewCryptoHandlersSpy() *CryptoHandlersSpy {
+	return new(CryptoHandlersSpy)
 }
 
 //
