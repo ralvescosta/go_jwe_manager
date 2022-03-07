@@ -10,12 +10,12 @@ import (
 	vm "jwemanager/pkg/interfaces/http/view_models"
 )
 
-type ICryptHandler interface {
+type ICryptoHandler interface {
 	Encrypt(httpRequest httpServer.HttpRequest) httpServer.HttpResponse
 	Decrypt(httpRequest httpServer.HttpRequest) httpServer.HttpResponse
 }
 
-type cryptHandler struct {
+type cryptoHandler struct {
 	logger         interfaces.ILogger
 	validator      interfaces.IValidator
 	httpResFactory factories.HttpResponseFactory
@@ -23,7 +23,7 @@ type cryptHandler struct {
 	decryptUseCase usecases.IDecryptUseCase
 }
 
-func (pst cryptHandler) Encrypt(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
+func (pst cryptoHandler) Encrypt(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
 	vModel := vm.EncryptViewModel{}
 	if err := json.Unmarshal(httpRequest.Body, &vModel); err != nil {
 		return pst.httpResFactory.BadRequest("body is required", nil)
@@ -42,7 +42,7 @@ func (pst cryptHandler) Encrypt(httpRequest httpServer.HttpRequest) httpServer.H
 	return pst.httpResFactory.Ok(vm.ToEncryptedViewModel(result), nil)
 }
 
-func (pst cryptHandler) Decrypt(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
+func (pst cryptoHandler) Decrypt(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
 	vModel := vm.DecryptViewModel{}
 	if err := json.Unmarshal(httpRequest.Body, &vModel); err != nil {
 		return pst.httpResFactory.BadRequest("body is required", nil)
@@ -61,12 +61,12 @@ func (pst cryptHandler) Decrypt(httpRequest httpServer.HttpRequest) httpServer.H
 	return pst.httpResFactory.Ok(vm.ToDecryptedViewModel(result), nil)
 }
 
-func NewCryptHandler(
+func NewCryptoHandler(
 	logger interfaces.ILogger,
 	validator interfaces.IValidator,
 	httpResFactory factories.HttpResponseFactory,
 	encryptUseCase usecases.IEncryptUseCase,
 	decryptUseCase usecases.IDecryptUseCase,
-) ICryptHandler {
-	return cryptHandler{logger, validator, httpResFactory, encryptUseCase, decryptUseCase}
+) ICryptoHandler {
+	return cryptoHandler{logger, validator, httpResFactory, encryptUseCase, decryptUseCase}
 }

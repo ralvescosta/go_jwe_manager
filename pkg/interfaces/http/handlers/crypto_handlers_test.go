@@ -120,7 +120,7 @@ func Test_Decrypt(t *testing.T) {
 }
 
 type cryptoHandlerSutRtn struct {
-	handler        ICryptHandler
+	handler        ICryptoHandler
 	logger         *logger.LoggerSpy
 	validator      *validator.ValidatorSpy
 	httpResFactory factories.HttpResponseFactory
@@ -139,7 +139,7 @@ func makeCryptoHandlerSut() cryptoHandlerSutRtn {
 	encryptUseCase := usecases.NewEncryptUseCaseSpy()
 	decryptUseCase := usecases.NewDecryptUseCaseSpy()
 
-	handler := NewCryptHandler(logger, validator, httpResFactory, encryptUseCase, decryptUseCase)
+	handler := NewCryptoHandler(logger, validator, httpResFactory, encryptUseCase, decryptUseCase)
 
 	encryptModel := vm.EncryptViewModel{
 		UserID: "45a710fd-1bb4-4171-9571-224c241838e6",
