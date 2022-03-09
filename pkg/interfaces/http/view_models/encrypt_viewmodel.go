@@ -19,7 +19,7 @@ func (pst EncryptViewModel) ToValueObject() valueObjects.EncryptValueObject {
 	}
 }
 
-func ToEncryptedViewModel(vo valueObjects.EncryptedValueObject) EncryptedViewModel {
+func NewEncryptedViewModel(vo valueObjects.EncryptedValueObject) EncryptedViewModel {
 	return EncryptedViewModel{
 		EncryptedData: vo.EncryptedData,
 	}

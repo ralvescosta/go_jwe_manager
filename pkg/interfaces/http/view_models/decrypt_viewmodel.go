@@ -20,7 +20,7 @@ func (pst DecryptViewModel) ToValueObject() valueObjects.DecryptValueObject {
 	}
 }
 
-func ToDecryptedViewModel(vo valueObjects.DecryptedValueObject) DecryptedViewModel {
+func NewDecryptedViewModel(vo valueObjects.DecryptedValueObject) DecryptedViewModel {
 	return DecryptedViewModel{
 		Data: vo.Data,
 	}
