@@ -39,7 +39,7 @@ func (pst cryptoHandler) Encrypt(httpRequest httpServer.HttpRequest) httpServer.
 		return pst.httpResFactory.ErrorResponseMapper(err, nil)
 	}
 
-	return pst.httpResFactory.Ok(vm.ToEncryptedViewModel(result), nil)
+	return pst.httpResFactory.Ok(vm.NewEncryptedViewModel(result), nil)
 }
 
 func (pst cryptoHandler) Decrypt(httpRequest httpServer.HttpRequest) httpServer.HttpResponse {
@@ -58,7 +58,7 @@ func (pst cryptoHandler) Decrypt(httpRequest httpServer.HttpRequest) httpServer.
 		return pst.httpResFactory.ErrorResponseMapper(err, nil)
 	}
 
-	return pst.httpResFactory.Ok(vm.ToDecryptedViewModel(result), nil)
+	return pst.httpResFactory.Ok(vm.NewDecryptedViewModel(result), nil)
 }
 
 func NewCryptoHandler(
