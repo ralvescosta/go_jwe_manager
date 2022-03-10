@@ -18,7 +18,7 @@ import (
 
 type webApiContainer struct {
 	logger     interfaces.ILogger
-	httpServer httpServer.IHttpServer
+	httpServer httpServer.IHTTPServer
 
 	keysRoutes   presenters.IKeysRoutes
 	cryptoRoutes presenters.ICryptoRoutes
@@ -32,7 +32,7 @@ func NewContainer(env interfaces.IEnvironments) (webApiContainer, error) {
 	if err != nil {
 		return webApiContainer{}, err
 	}
-	httpServer := httpServer.NewHttpServer(env, logger, shutdown)
+	httpServer := httpServer.NewHTTPServer(env, logger, shutdown)
 
 	rdb, err := database.Connection(logger, shutdown)
 	if err != nil {

@@ -8,7 +8,7 @@ import (
 )
 
 type IHealthRoutes interface {
-	Register(httpServer httpServer.IHttpServer)
+	Register(httpServer httpServer.IHTTPServer)
 }
 
 type healthRoutes struct {
@@ -16,7 +16,7 @@ type healthRoutes struct {
 	handlers handlers.IHealthHandler
 }
 
-func (pst healthRoutes) Register(httpServer httpServer.IHttpServer) {
+func (pst healthRoutes) Register(httpServer httpServer.IHTTPServer) {
 	httpServer.RegisterRoute("GET", "/api/v1/health", adapters.HandlerAdapt(pst.handlers.Check, pst.logger))
 }
 
