@@ -8,7 +8,7 @@ import (
 )
 
 type IKeysRoutes interface {
-	Register(httpServer httpServer.IHttpServer)
+	Register(httpServer httpServer.IHTTPServer)
 }
 
 type KeysRoutes struct {
@@ -16,7 +16,7 @@ type KeysRoutes struct {
 	handlers handlers.IKeysHandler
 }
 
-func (pst KeysRoutes) Register(httpServer httpServer.IHttpServer) {
+func (pst KeysRoutes) Register(httpServer httpServer.IHTTPServer) {
 	httpServer.RegisterRoute("POST", "/api/v1/keys", adapters.HandlerAdapt(pst.handlers.Create, pst.logger))
 	httpServer.RegisterRoute("GET", "/api/v1/keys/:user_id/:key_id", adapters.HandlerAdapt(pst.handlers.FindOne, pst.logger))
 }

@@ -8,7 +8,7 @@ import (
 )
 
 type ICryptoRoutes interface {
-	Register(httpServer httpServer.IHttpServer)
+	Register(httpServer httpServer.IHTTPServer)
 }
 
 type cryptRoutes struct {
@@ -16,7 +16,7 @@ type cryptRoutes struct {
 	handlers handlers.ICryptoHandler
 }
 
-func (pst cryptRoutes) Register(httpServer httpServer.IHttpServer) {
+func (pst cryptRoutes) Register(httpServer httpServer.IHTTPServer) {
 	httpServer.RegisterRoute("POST", "/api/v1/encrypt", adapters.HandlerAdapt(pst.handlers.Encrypt, pst.logger))
 	httpServer.RegisterRoute("POST", "/api/v1/decrypt", adapters.HandlerAdapt(pst.handlers.Decrypt, pst.logger))
 }

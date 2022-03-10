@@ -22,7 +22,7 @@ func Test_NewHttpServer(t *testing.T) {
 	t.Run("should create a new http server correctly", func(t *testing.T) {
 		sut := makeHTTPServerSutRtn("POST")
 
-		server := NewHttpServer(sut.env, sut.logger, sut.shotdown)
+		server := NewHTTPServer(sut.env, sut.logger, sut.shotdown)
 
 		assert.NotNil(t, server)
 	})
@@ -151,7 +151,7 @@ func Test_Run(t *testing.T) {
 }
 
 type httpServerSutRtn struct {
-	httpServer HttpServer
+	httpServer HTTPServer
 	logger     *logger.LoggerSpy
 	env        *environments.EnvironmentsSpy
 	shotdown   chan bool
@@ -170,7 +170,7 @@ func makeHTTPServerSutRtn(httpMethod string) httpServerSutRtn {
 	logger := logger.NewLoggerSpy()
 	env := environments.NewEnvironmentsSpy()
 	shotdown := make(chan bool)
-	httpServer := HttpServer{
+	httpServer := HTTPServer{
 		env:      env,
 		logger:   logger,
 		shotdown: shotdown,

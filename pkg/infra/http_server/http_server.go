@@ -13,14 +13,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type IHttpServer interface {
+type IHTTPServer interface {
 	Default()
 	RegisterRoute(method string, path string, handlers ...gin.HandlerFunc) error
 	Setup()
 	Run() error
 }
 
-type HttpServer struct {
+type HTTPServer struct {
 	env      interfaces.IEnvironments
 	addr     string
 	logger   interfaces.ILogger
@@ -31,14 +31,14 @@ type HttpServer struct {
 
 var httpServerWrapper = gin.New
 
-func (pst *HttpServer) Default() {
+func (pst *HTTPServer) Default() {
 	pst.router = httpServerWrapper()
 	pst.router.Use(GinLogger(pst.logger))
 	pst.router.SetTrustedProxies(nil)
 	pst.router.Use(gin.Recovery())
 }
 
-func (hs HttpServer) RegisterRoute(method string, path string, handlers ...gin.HandlerFunc) error {
+func (hs HTTPServer) RegisterRoute(method string, path string, handlers ...gin.HandlerFunc) error {
 	switch method {
 	case "POST":
 		hs.router.POST(path, handlers...)
@@ -56,7 +56,7 @@ func (hs HttpServer) RegisterRoute(method string, path string, handlers ...gin.H
 	return nil
 }
 
-func (pst *HttpServer) Setup() {
+func (pst *HTTPServer) Setup() {
 	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
 	pst.addr = fmt.Sprintf("%s:%s", host, port)
@@ -69,7 +69,7 @@ func (pst *HttpServer) Setup() {
 	go pst.gracefullShutdown()
 }
 
-func (pst HttpServer) Run() error {
+func (pst HTTPServer) Run() error {
 	if pst.env.GO_ENV() != pst.env.PROD_ENV() {
 		certPath := os.Getenv("TLS_CERT_PATH")
 		keyPath := os.Getenv("TLS_KEY_PATH")
@@ -86,7 +86,7 @@ func (pst HttpServer) Run() error {
 	return errors.NewInternalError(err.Error())
 }
 
-func (pst HttpServer) gracefullShutdown() {
+func (pst HTTPServer) gracefullShutdown() {
 	<-pst.shotdown
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -98,8 +98,8 @@ func (pst HttpServer) gracefullShutdown() {
 	}
 }
 
-func NewHttpServer(environments interfaces.IEnvironments, logger interfaces.ILogger, shotdown chan bool) IHttpServer {
-	return &HttpServer{
+func NewHTTPServer(environments interfaces.IEnvironments, logger interfaces.ILogger, shotdown chan bool) IHTTPServer {
+	return &HTTPServer{
 		env:      environments,
 		logger:   logger,
 		shotdown: shotdown,
